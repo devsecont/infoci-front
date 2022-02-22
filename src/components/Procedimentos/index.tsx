@@ -1,6 +1,6 @@
 import { useFormik } from 'formik'
 
-import { TextField, MenuItem, Button, IconButton } from '@mui/material'
+import { TextField, MenuItem, Button, IconButton, Autocomplete } from '@mui/material'
 import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight'
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft'
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle'
@@ -14,6 +14,7 @@ import { ConfirmDialog } from '../ConfirmDialog'
 import axios from 'axios'
 import baseAPI from '../../utils/baseAPI'
 import { AlertSucess } from '../AlertSucess'
+import pontosControle from '../../utils/pontosControle'
 
 interface DataProcedimentoProps {
   id: number
@@ -244,9 +245,7 @@ export const Procedimentos = () => {
   }
 
   async function responseDialogUnidadeGestoraYes() {
-    // navigate('/select_ug')
-    // context.setValueTab(0)
-
+   
     const valuesUnidadeGestora = {
       unidadeGestoraIdNumRegistro: ``,
       unidadeGestoraNivelControleInterno: `${
@@ -267,7 +266,7 @@ export const Procedimentos = () => {
   }
 
   function responseDialogUnidadeGestoraNo() {
-    console.log('Ir para a geração de XML.')
+
     context.setValueTab(4)
     return
   }
@@ -288,8 +287,8 @@ export const Procedimentos = () => {
       dataProcedimentos[selectProcedimento].procedimentosCodigoUnidadeGestora
     }`,
     procedimentosCodigoProcedimento: `${
-      dataProcedimentos.length &&
-      dataProcedimentos[selectProcedimento].procedimentosCodigoProcedimento
+      dataProcedimentos.length ?
+      dataProcedimentos[selectProcedimento].procedimentosCodigoProcedimento : ''
     }`,
     procedimentosTipoPontoControle: `${
       dataProcedimentos.length
@@ -363,8 +362,6 @@ export const Procedimentos = () => {
                   </MenuItem>
                 )
               })}
-              {/* <MenuItem value={0}>Procedimento - 00001</MenuItem>
-          <MenuItem value={1}>Procedimento - 00002</MenuItem> */}
             </TextField>
           )}
 
@@ -452,23 +449,41 @@ export const Procedimentos = () => {
         }
       />
 
-      <TextField
-        variant="outlined"
-        fullWidth
+{dataProcedimentos.length > 0 && <Autocomplete
         id="procedimentosCodigoProcedimento"
-        label="Código do Procedimento (Tabela Referencial 1 / IN 68 de 2020)"
-        name="procedimentosCodigoProcedimento"
-        value={formik.values.procedimentosCodigoProcedimento}
-        onChange={formik.handleChange}
-        error={
-          formik.touched.procedimentosCodigoProcedimento &&
-          Boolean(formik.errors.procedimentosCodigoProcedimento)
-        }
-        helperText={
-          formik.touched.procedimentosCodigoProcedimento &&
-          formik.errors.procedimentosCodigoProcedimento
-        }
-      />
+        options={pontosControle}
+        noOptionsText={'Não encontrado'}
+        getOptionLabel={(option) => option.label || ""}
+        value={pontosControle.filter(ponto => ponto.cod === formik.values.procedimentosCodigoProcedimento)[0]}
+        isOptionEqualToValue={(option, value) => option === value}
+        defaultValue={{cod:"", label:""}}
+        onChange={(event, value) => {
+          if(value) {
+            formik.setFieldValue('procedimentosCodigoProcedimento', value?.cod)
+            return
+          }
+          formik.setFieldValue('procedimentosCodigoProcedimento', "")
+          
+        }}
+       
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            name="procedimentosCodigoProcedimento"
+            label="Código do Procedimento (Tabela Referencial 1 / IN 68 de 2020)"
+            variant="outlined"
+            error={
+              formik.touched.procedimentosCodigoProcedimento &&
+              Boolean(formik.errors.procedimentosCodigoProcedimento)
+            }
+            helperText={
+              formik.touched.procedimentosCodigoProcedimento &&
+              formik.errors.procedimentosCodigoProcedimento
+            }
+            fullWidth
+          />
+        )}
+      />}
 
       <TextField
         fullWidth
