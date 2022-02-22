@@ -27,13 +27,15 @@ const validationSchema = yup.object({
 
     procedimentosUniversoAnalisado: yup
     .string()
-    .required('O campo é obrigatório')
+    .when('procedimentosTipoPontoControle', (procedimentosTipoPontoControle, field) => 
+          procedimentosTipoPontoControle === 1 ? field.required('O campo é obrigatório') : field)
     .matches(/^[0-9]+$/, "Apenas números")
     .max(5, 'Máximo de 5 dígitos'),
     
     procedimentosAmostraSelecionada: yup
     .string()
-    .required('O campo é obrigatório')
+    .when('procedimentosTipoPontoControle', (procedimentosTipoPontoControle, field) => 
+          procedimentosTipoPontoControle === 1 ? field.required('O campo é obrigatório') : field)
     .matches(/^[0-9]+$/, "Apenas números")
     .max(5, 'Máximo de 5 dígitos'),
 
