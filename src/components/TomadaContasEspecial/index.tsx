@@ -374,8 +374,7 @@ export const TomadaContasEspecial = () => {
                   )
                 },
               )}
-              {/* <MenuItem value={0}>Procedimento - 00001</MenuItem>
-          <MenuItem value={1}>Procedimento - 00002</MenuItem> */}
+             
             </TextField>
           )}
 

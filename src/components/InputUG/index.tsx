@@ -95,10 +95,6 @@ export const InputUG = () => {
             {inputUGInfo.map((data:InputUGProps) => {
                return <MenuItem value={`${data.codigoUnidadeGestoraCidades}`} key={data.id}>{data.nomeUnidadeGestora}</MenuItem>
             })}
-
-            {/* <MenuItem value={"1"}>SECONT</MenuItem>
-            <MenuItem value={"2"}>SESA</MenuItem>
-            <MenuItem value={"3"}>SEGER</MenuItem>  */}
           </TextField>
 
           <Button type="submit" fullWidth variant="contained" color="primary">

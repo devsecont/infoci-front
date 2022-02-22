@@ -1,20 +1,5 @@
 import * as yup from "yup";
 
-const  initialValues = {
- 
-  // tomadaContasEspecialIdNumRegistro: "",
-  // tomadaContasEspecialCodigoUnidadeGestora:"",
-  // tomadaContasEspecialProcesso: "",
-  // tomadaContasEspecialAnoProcesso: "",
-  // tomadaContasEspecialFatoMotivo:"",
-  // tomadaContasEspecialDataCiencia: "",
-  // tomadaContasEspecialDataInstauracao:"",
-  // tomadaContasEspecialDataEnvioTribunalContas:"",
-  // tomadaContasEspecialValorDebito:"",
-  // tomadaContasEspecialSituacaoEm31do12:"",
-  // tomadaContasEspecialMotivoBaixaDebito:""
-}
-
 const regexDate = /^\d{4}-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$/;
 const regexYear = /^\d{4}$/;
 const regexDecimal = /^\d{0,14}(.\d{1,2})?$/;
@@ -75,7 +60,7 @@ const validationSchema = yup.object({
 });
 
 const validationEstruturaInicial = {
-  initialValues,
+  
   validationSchema
 }
 export default validationEstruturaInicial;

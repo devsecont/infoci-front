@@ -1,19 +1,5 @@
 import * as yup from "yup";
 
-const  initialValues = {
- 
-  // procedimentosIdNumRegistro: "",
-  // procedimentosNivelControleInterno:"",
-  // procedimentosCodigoUnidadeGestora: "",
-  // procedimentosCodigoProcedimento: "",
-  // procedimentosTipoPontoControle:"",
-  // procedimentosUniversoAnalisado: "",
-  // procedimentosAmostraSelecionada:"",
-  // procedimentosDescricaoAnalise:"",
-  // procedimentosTipoProcedimentoAnalisado:"",
-  // procedimentosSituacaoAnalise:"",
-}
-
 const validationSchema = yup.object({
   procedimentosIdNumRegistro: yup
     .string()
@@ -66,7 +52,7 @@ const validationSchema = yup.object({
 });
 
 const validationEstruturaInicial = {
-  initialValues,
+ 
   validationSchema
 }
 export default validationEstruturaInicial;

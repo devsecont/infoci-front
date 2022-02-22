@@ -265,8 +265,7 @@ export const UnidadeGestora = () => {
                   )
                 },
               )}
-              {/* <MenuItem value={0}>Procedimento - 00001</MenuItem>
-          <MenuItem value={1}>Procedimento - 00002</MenuItem> */}
+           
             </TextField>
           )}
 
@@ -456,14 +455,6 @@ export const UnidadeGestora = () => {
         responseYes={deleteUnidadeGestora}
         responseNo={() => null}
       />
-
-      {/* <ConfirmDialog
-        open={openDialogUnidadeGestora}
-        setOpen={setOpenDialogUnidadeGestora}
-        titleMessage={'Deseja incluir outra Unidade Gestora ?'}
-        responseYes={responseDialogUnidadeGestoraYes}
-        responseNo={responseDialogUnidadeGestoraNo}
-      /> */}
 
       <AlertSucess
         open={openAlertSave}

@@ -1,15 +1,5 @@
 import * as yup from "yup";
 
-const  initialValues = {
- 
-  // unidadeGestoraIdNumRegistro: "",
-  // unidadeGestoraNivelControleInterno:"",
-  // unidadeGestoraCodigoUnidadeGestora: "",
-  // unidadeGestoraResponsavelUnidadeGestora: "",
-  // unidadeGestoraExercicioUltimaManifestacaoControleInterno:"",
-  // unidadeGestoraOpiniaoPrestacaoContasControleInterno: "",
-  
-}
 const regexYear = /^\d{4}$/;
 const regexNumbers = /^[0-9]+$/;
 
@@ -46,7 +36,7 @@ const validationSchema = yup.object({
 });
 
 const validationUnidadeGestora = {
-  initialValues,
+
   validationSchema
 }
 export default validationUnidadeGestora;

@@ -1,19 +1,5 @@
 import * as yup from "yup";
 
-const  initialValues = {
- 
-    // estruturaInicialIdNumRegistro: "",
-    // estruturaInicialNivelControleInterno:"",
-    // estruturaInicialQuantidadeTotalServidores: "",
-    // estruturaInicialQuantidadeServidoresEfetivos: "",
-    // estruturaInicialQuantidadeContadores:"",
-    // estruturaInicialNormaInternaGestaoOrcamentaria: "",
-    // estruturaInicialNormaInternaGestaoFinanceira:"",
-    // estruturaInicialNormaInternaGestaoPatrimonial:"",
-    // estruturaInicialNormaInternaGestaoFiscal:"",
-    // estruturaInicialNormaInternaDemContabeis:"",
-}
-
 const regexNumbers = /^[0-9]+$/;
 
 const validationSchema = yup.object({
@@ -67,7 +53,7 @@ const validationSchema = yup.object({
 });
 
 const validationEstruturaInicial = {
-  initialValues,
+ 
   validationSchema
 }
 export default validationEstruturaInicial;

@@ -11,13 +11,7 @@ function App() {
     <GlobalStyled/>
       <Header/>
     <ContainerStyle>
-
-      {/* <FormInfoci/> */}
-      {/* <FormSignIn/> */}
-      {/* <FormRegister/> */}
-
       <RoutesForm/>
-
     </ContainerStyle>
       <Footer/>
     
