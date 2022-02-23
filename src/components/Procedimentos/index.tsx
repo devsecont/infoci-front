@@ -15,6 +15,7 @@ import axios from 'axios'
 import baseAPI from '../../utils/baseAPI'
 import { AlertSucess } from '../AlertSucess'
 import pontosControle from '../../utils/pontosControle'
+import codigosCidades from '../../utils/codigosCidades'
 
 interface DataProcedimentoProps {
   id: number
@@ -140,8 +141,8 @@ export const Procedimentos = () => {
   async function newProcedimento() {
     const valuesProcedimento = {
       procedimentosIdNumRegistro: ``,
-      procedimentosNivelControleInterno: `${context.formInfo.codigoUnidadeGestoraCidades !== "001" ? 2 : ''}`,
-      procedimentosCodigoUnidadeGestora: `${context.formInfo.codigoUnidadeGestoraCidades}`,
+      procedimentosNivelControleInterno: `${context.formInfo.nomeUnidadeGestora !== "SECONT" ? 2 : ''}`,
+      procedimentosCodigoUnidadeGestora: `${context.formInfo.nomeUnidadeGestora !== 'SECONT' ? context.formInfo.codigoUnidadeGestoraCidades : ''}`,
       procedimentosCodigoProcedimento: ``,
       procedimentosTipoPontoControle: ``,
       procedimentosUniversoAnalisado: ``,
@@ -283,8 +284,8 @@ export const Procedimentos = () => {
         : ''
     }`,
     procedimentosCodigoUnidadeGestora: `${
-      dataProcedimentos.length &&
-      dataProcedimentos[selectProcedimento].procedimentosCodigoUnidadeGestora
+      dataProcedimentos.length ?
+      dataProcedimentos[selectProcedimento].procedimentosCodigoUnidadeGestora : ''
     }`,
     procedimentosCodigoProcedimento: `${
       dataProcedimentos.length ?
@@ -428,7 +429,7 @@ export const Procedimentos = () => {
         <MenuItem value={2}>2 – Unidade Setorial</MenuItem>
       </TextField>
 
-      <TextField
+      {context.formInfo.nomeUnidadeGestora !== 'SECONT' ? <TextField
         variant="outlined"
         fullWidth
         id="procedimentosCodigoUnidadeGestora"
@@ -444,10 +445,43 @@ export const Procedimentos = () => {
           formik.touched.procedimentosCodigoUnidadeGestora &&
           formik.errors.procedimentosCodigoUnidadeGestora
         }
-        disabled={
-          context.formInfo.nomeUnidadeGestora !== 'SECONT' ? true : false
+        disabled
+      /> : <Autocomplete
+      id="procedimentosCodigoUnidadeGestora"
+      options={codigosCidades}
+      noOptionsText={'Não encontrado'}
+      getOptionLabel={(option) => option.label || ""}
+      value={codigosCidades.filter(codigo => codigo.cod === formik.values.procedimentosCodigoUnidadeGestora)[0]}
+      isOptionEqualToValue={(option, value) => option === value}
+      defaultValue={{cod:"", label:""}}
+      onChange={(event, value) => {
+        if(value) {
+          formik.setFieldValue('procedimentosCodigoUnidadeGestora', value?.cod)
+          return
         }
-      />
+       
+        formik.setFieldValue('procedimentosCodigoUnidadeGestora', "")
+        
+      }}
+     
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          name="procedimentosCodigoUnidadeGestora"
+          label="Código da Unidade Gestora em que os procedimentos foram aplicados"
+          variant="outlined"
+          error={
+            formik.touched.procedimentosCodigoUnidadeGestora &&
+            Boolean(formik.errors.procedimentosCodigoUnidadeGestora)
+          }
+          helperText={
+            formik.touched.procedimentosCodigoUnidadeGestora &&
+            formik.errors.procedimentosCodigoUnidadeGestora
+          }
+          fullWidth
+        />
+      )}
+    /> }
 
 {dataProcedimentos.length > 0 && <Autocomplete
         id="procedimentosCodigoProcedimento"
