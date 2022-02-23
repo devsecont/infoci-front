@@ -1,5 +1,5 @@
 import { useFormik } from 'formik'
-import { TextField, MenuItem, Button, IconButton } from '@mui/material'
+import { TextField, MenuItem, Button, IconButton, Autocomplete } from '@mui/material'
 import { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -15,6 +15,7 @@ import { TomadaContasEspecialraStyle } from './style'
 import { GlobalContext } from '../../context/GlobalStorage'
 import { ConfirmDialog } from '../ConfirmDialog'
 import { AlertSucess } from '../AlertSucess'
+import codigosCidades from '../../utils/codigosCidades'
 
 interface DataTomadaContasEspecialProps {
   id: number
@@ -271,9 +272,9 @@ export const TomadaContasEspecial = () => {
         .tomadaContasEspecialIdNumRegistro
     }`,
     tomadaContasEspecialCodigoUnidadeGestora: `${
-      dataTomadaContasEspecial.length &&
+      dataTomadaContasEspecial.length ?
       dataTomadaContasEspecial[selectTomadaContasEspecial]
-        .tomadaContasEspecialCodigoUnidadeGestora
+        .tomadaContasEspecialCodigoUnidadeGestora : ''
     }`,
     tomadaContasEspecialProcesso: `${
       dataTomadaContasEspecial.length &&
@@ -419,13 +420,13 @@ export const TomadaContasEspecial = () => {
         disabled
       />
 
-      <TextField
+{context.formInfo.nomeUnidadeGestora !== 'SECONT' ? <TextField
         variant="outlined"
         fullWidth
         id="tomadaContasEspecialCodigoUnidadeGestora"
         label="Código da Unidade Gestora em que as
-      Tomadas de Contas Especiais foram
-      realizadas"
+        Tomadas de Contas Especiais foram
+        realizadas"
         name="tomadaContasEspecialCodigoUnidadeGestora"
         value={formik.values.tomadaContasEspecialCodigoUnidadeGestora}
         onChange={formik.handleChange}
@@ -437,10 +438,45 @@ export const TomadaContasEspecial = () => {
           formik.touched.tomadaContasEspecialCodigoUnidadeGestora &&
           formik.errors.tomadaContasEspecialCodigoUnidadeGestora
         }
-        disabled={
-          context.formInfo.nomeUnidadeGestora !== 'SECONT' ? true : false
+        disabled
+      /> : <Autocomplete
+      id="tomadaContasEspecialCodigoUnidadeGestora"
+      options={codigosCidades}
+      noOptionsText={'Não encontrado'}
+      getOptionLabel={(option) => option.label || ""}
+      value={codigosCidades.filter(codigo => codigo.cod === formik.values.tomadaContasEspecialCodigoUnidadeGestora)[0]}
+      isOptionEqualToValue={(option, value) => option === value}
+      defaultValue={{cod:"", label:""}}
+      onChange={(event, value) => {
+        if(value) {
+          formik.setFieldValue('tomadaContasEspecialCodigoUnidadeGestora', value?.cod)
+          return
         }
-      />
+       
+        formik.setFieldValue('tomadaContasEspecialCodigoUnidadeGestora', "")
+        
+      }}
+     
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          name="tomadaContasEspecialCodigoUnidadeGestora"
+          label="Código da Unidade Gestora em que as
+          Tomadas de Contas Especiais foram
+          realizadas"
+          variant="outlined"
+          error={
+            formik.touched.tomadaContasEspecialCodigoUnidadeGestora &&
+            Boolean(formik.errors.tomadaContasEspecialCodigoUnidadeGestora)
+          }
+          helperText={
+            formik.touched.tomadaContasEspecialCodigoUnidadeGestora &&
+            formik.errors.tomadaContasEspecialCodigoUnidadeGestora
+          }
+          fullWidth
+        />
+      )}
+    /> }
 
       <TextField
         variant="outlined"
