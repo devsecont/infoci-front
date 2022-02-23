@@ -1,6 +1,6 @@
 import { useFormik } from 'formik'
 
-import { TextField, MenuItem, Button, IconButton } from '@mui/material'
+import { TextField, MenuItem, Button, IconButton, Autocomplete } from '@mui/material'
 import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight'
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft'
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle'
@@ -14,6 +14,7 @@ import axios from 'axios'
 import baseAPI from '../../utils/baseAPI'
 import { ConfirmDialog } from '../ConfirmDialog'
 import { AlertSucess } from '../AlertSucess'
+import codigosCidades from '../../utils/codigosCidades'
 
 interface DataUnidadeGestoraProps {
   id: number
@@ -129,7 +130,7 @@ export const UnidadeGestora = () => {
       unidadeGestoraNivelControleInterno: `${
         context.formInfo.nomeUnidadeGestora !== 'SECONT' ? 2 : ''
       }`,
-      unidadeGestoraCodigoUnidadeGestora: `${context.formInfo.codigoUnidadeGestoraCidades}`,
+      unidadeGestoraCodigoUnidadeGestora: `${context.formInfo.nomeUnidadeGestora !== 'SECONT' ? context.formInfo.codigoUnidadeGestoraCidades : ''}`,
       unidadeGestoraResponsavelUnidadeGestora: ``,
       unidadeGestoraExercicioUltimaManifestacaoControleInterno: ``,
       unidadeGestoraOpiniaoPrestacaoContasControleInterno: ``,
@@ -196,9 +197,9 @@ export const UnidadeGestora = () => {
         : ''
     }`,
     unidadeGestoraCodigoUnidadeGestora: `${
-      dataUnidadeGestora.length > 0 &&
+      dataUnidadeGestora.length > 0 ?
       dataUnidadeGestora[selectUnidadeGestora]
-        .unidadeGestoraCodigoUnidadeGestora
+        .unidadeGestoraCodigoUnidadeGestora : ''
     }`,
     unidadeGestoraResponsavelUnidadeGestora: `${
       dataUnidadeGestora.length > 0 &&
@@ -334,7 +335,7 @@ export const UnidadeGestora = () => {
         <MenuItem value={2}>2 – Unidade Setorial</MenuItem>
       </TextField>
 
-      <TextField
+      {context.formInfo.nomeUnidadeGestora !== 'SECONT' ? <TextField
         variant="outlined"
         fullWidth
         id="unidadeGestoraCodigoUnidadeGestora"
@@ -350,10 +351,43 @@ export const UnidadeGestora = () => {
           formik.touched.unidadeGestoraCodigoUnidadeGestora &&
           formik.errors.unidadeGestoraCodigoUnidadeGestora
         }
-        disabled={
-          context.formInfo.nomeUnidadeGestora !== 'SECONT' ? true : false
+        disabled
+      /> : <Autocomplete
+      id="unidadeGestoraCodigoUnidadeGestora"
+      options={codigosCidades}
+      noOptionsText={'Não encontrado'}
+      getOptionLabel={(option) => option.label || ""}
+      value={codigosCidades.filter(codigo => codigo.cod === formik.values.unidadeGestoraCodigoUnidadeGestora)[0]}
+      isOptionEqualToValue={(option, value) => option === value}
+      defaultValue={{cod:"", label:""}}
+      onChange={(event, value) => {
+        if(value) {
+          formik.setFieldValue('unidadeGestoraCodigoUnidadeGestora', value?.cod)
+          return
         }
-      />
+       
+        formik.setFieldValue('unidadeGestoraCodigoUnidadeGestora', "")
+        
+      }}
+     
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          name="unidadeGestoraCodigoUnidadeGestora"
+          label="Código da unidade Gestora em que os procedimentos foram aplicados"
+          variant="outlined"
+          error={
+            formik.touched.unidadeGestoraCodigoUnidadeGestora &&
+            Boolean(formik.errors.unidadeGestoraCodigoUnidadeGestora)
+          }
+          helperText={
+            formik.touched.unidadeGestoraCodigoUnidadeGestora &&
+            formik.errors.unidadeGestoraCodigoUnidadeGestora
+          }
+          fullWidth
+        />
+      )}
+    /> }
 
       <TextField
         variant="outlined"
