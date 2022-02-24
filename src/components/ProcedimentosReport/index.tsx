@@ -1,4 +1,5 @@
 import { MenuItem, TextField } from '@mui/material'
+import codigosCidades from '../../utils/codigosCidades';
 import { ProcedimentosReportStyle } from './style'
 
 interface DataProcedimentoProps {
@@ -21,6 +22,7 @@ export const ProcedimentosReport = ({ dataProcedimentos }: PropsType) => {
   return (
     <ProcedimentosReportStyle>
       {dataProcedimentos.map((data: DataProcedimentoProps) => {
+         const codCidades = codigosCidades.filter(codigo => codigo.cod === data.procedimentosCodigoUnidadeGestora)[0];
         return (
           <div key={data.id} data-output="procedimentos">
             <h3>Registro - {data.procedimentosIdNumRegistro}</h3>
@@ -56,7 +58,7 @@ export const ProcedimentosReport = ({ dataProcedimentos }: PropsType) => {
               id="procedimentosCodigoUnidadeGestora"
               label="Código da Unidade Gestora em que os procedimentos foram aplicados"
               name="procedimentosCodigoUnidadeGestora"
-              value={data.procedimentosCodigoUnidadeGestora}
+              value={codCidades ? codCidades.label : ''}
               disabled
             />
 

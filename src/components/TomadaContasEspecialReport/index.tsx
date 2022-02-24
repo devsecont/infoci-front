@@ -1,4 +1,5 @@
 import { MenuItem, TextField } from '@mui/material'
+import codigosCidades from '../../utils/codigosCidades';
 import { TomadaContasEspecialReportStyle } from './style'
 
 interface DataTomadaContasEspecialProps {
@@ -25,6 +26,7 @@ export const TomadaContasEspecialReport = ({
   return (
     <TomadaContasEspecialReportStyle>
       {dataTomadaContasEspecial.map((data: DataTomadaContasEspecialProps) => {
+        const codCidades = codigosCidades.filter(codigo => codigo.cod === data.tomadaContasEspecialCodigoUnidadeGestora)[0];
         return (
           <div key={data.id} data-output="tomada-contas-especial">
             <h3>Registro - {data.tomadaContasEspecialIdNumRegistro}</h3>
@@ -47,7 +49,7 @@ export const TomadaContasEspecialReport = ({
       Tomadas de Contas Especiais foram
       realizadas"
               name="tomadaContasEspecialCodigoUnidadeGestora"
-              value={data.tomadaContasEspecialCodigoUnidadeGestora}
+              value={codCidades ? codCidades.label : ''}
               disabled
             />
 

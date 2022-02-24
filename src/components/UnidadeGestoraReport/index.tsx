@@ -1,4 +1,5 @@
 import { MenuItem, TextField } from '@mui/material'
+import codigosCidades from '../../utils/codigosCidades';
 import { UnidadeGestoraReportStyle } from './style'
 
 interface DataUnidadeGestoraProps {
@@ -20,6 +21,7 @@ export const UnidadeGestoraReport = ({ dataUnidadeGestora }: PropsType) => {
     <UnidadeGestoraReportStyle>
     
       {dataUnidadeGestora.map((data: DataUnidadeGestoraProps) => {
+         const codCidades = codigosCidades.filter(codigo => codigo.cod === data.unidadeGestoraCodigoUnidadeGestora)[0];
         return (
           <div key={data.id} data-output="unidade-gestora">
             <h3>Registro - {data.unidadeGestoraIdNumRegistro}</h3>
@@ -54,7 +56,7 @@ export const UnidadeGestoraReport = ({ dataUnidadeGestora }: PropsType) => {
               id="unidadeGestoraCodigoUnidadeGestora"
               label="Código da unidade Gestora em que os procedimentos foram aplicados"
               name="unidadeGestoraCodigoUnidadeGestora"
-              value={data.unidadeGestoraCodigoUnidadeGestora}
+              value={codCidades ? codCidades.label : ''}
               disabled
             />
 
