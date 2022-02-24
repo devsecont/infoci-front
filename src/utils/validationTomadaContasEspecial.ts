@@ -2,7 +2,7 @@ import * as yup from "yup";
 
 const regexDate = /^\d{4}-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$/;
 const regexYear = /^\d{4}$/;
-const regexDecimal = /^\d{0,14}(.\d{1,2})?$/;
+const regexDecimal =  /^\d{1,14}\.\d{2}$/;
 
 const validationSchema = yup.object({
   tomadaContasEspecialIdNumRegistro: yup
@@ -48,7 +48,7 @@ const validationSchema = yup.object({
     tomadaContasEspecialValorDebito: yup
     .string()
     .required('O campo é obrigatório')
-    .matches(regexDecimal, 'Apenas números de no máximo 14 dígitos antes da vírgula e 2 dígitos depois da vírgula'),
+    .matches(regexDecimal, 'Apenas números com ponto decimal ex: 100.00, 10152.20, 85424.65, etc.'),
   
     tomadaContasEspecialSituacaoEm31do12: yup
     .number()
