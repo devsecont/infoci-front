@@ -106,6 +106,8 @@ const codigosCidades = [
   {cod:"500E2000001", label:"500E2000001 - SRSCI"},
   {cod:"500E1900006", label:"500E1900006 - HMSA"},
   {cod:"500E0600003", label:"500E0600003 - CASA CIVIL"},
+  {cod:"500E0100026", label:"500E0100026 - ADERES1"},
+  {cod:"500E0100010", label:"500E0100010 - ADERES2"},
 
 ]
 

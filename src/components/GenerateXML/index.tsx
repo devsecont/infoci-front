@@ -296,7 +296,7 @@ export const GenerateXML = () => {
   return (
     <GenerateXMLStyle id='printReport'>
       <h2>
-        Verifique se as informações foram preenchidas corretamente e clique no botão <span>INFOCI XML</span> para realizar o download do arquivo. 
+        Verifique se as informações foram preenchidas corretamente e clique no botão <span>INFOCI XML</span> no final da página para realizar o download do arquivo. 
       </h2>
 
       <List
