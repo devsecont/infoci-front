@@ -108,6 +108,7 @@ const codigosCidades = [
   {cod:"500E0600003", label:"500E0600003 - CASA CIVIL"},
   {cod:"500E0100026", label:"500E0100026 - ADERES1"},
   {cod:"500E0100010", label:"500E0100010 - ADERES2"},
+  {cod:"500E1900013", label:"500E1900013 - HJSN"},
   {cod:"511T1111111", label:"511T1111111 - SECONT-TESTE"},
   {cod:"522T2222222", label:"522T2222222 - FECC-TESTE"},
 ]
