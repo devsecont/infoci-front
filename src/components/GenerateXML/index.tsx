@@ -289,7 +289,7 @@ export const GenerateXML = () => {
   )
 
   function downloadXML() {
-    const filename = 'INFOCI.XML'
+    const filename = 'INFOCI.xml'
     download(filename, xml)
   }
   
