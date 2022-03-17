@@ -109,6 +109,10 @@ const codigosCidades = [
   {cod:"500E0100026", label:"500E0100026 - ADERES1"},
   {cod:"500E0100010", label:"500E0100010 - ADERES2"},
   {cod:"500E1900013", label:"500E1900013 - HJSN"},
+  {cod:"500E0600024", label:"500E0600024 - SETADES"},
+  {cod:"500E0500029", label:"500E0500029 - FEAS"},
+  {cod:"500E0500031", label:"500E0500031 - FUNCOP"},
+  {cod:"500E0500044", label:"500E0500044 - FET/ES"},
   {cod:"511T1111111", label:"511T1111111 - SECONT-TESTE"},
   {cod:"522T2222222", label:"522T2222222 - FECC-TESTE"},
 ]
