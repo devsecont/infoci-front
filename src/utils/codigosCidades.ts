@@ -113,6 +113,11 @@ const codigosCidades = [
   {cod:"500E0500029", label:"500E0500029 - FEAS"},
   {cod:"500E0500031", label:"500E0500031 - FUNCOP"},
   {cod:"500E0500044", label:"500E0500044 - FET/ES"},
+  {cod:"500E0100025", label:"500E0100025 - IASES"},
+  {cod:"500E1900009", label:"500E1900009 - CPF"},
+  {cod:"500E1900007", label:"500E1900007 - HRAS"},
+  {cod:"500E1900012", label:"500E1900012 - HSJC"},
+  {cod:"500E2000002", label:"500E2000002 - SRSSM"},
   {cod:"511T1111111", label:"511T1111111 - SECONT-TESTE"},
   {cod:"522T2222222", label:"522T2222222 - FECC-TESTE"},
 ]
