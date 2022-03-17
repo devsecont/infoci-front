@@ -39,7 +39,7 @@ const codigosCidades = [
   {cod:"500E0100024", label:"500E0100024 - PROCON-ES"},
   {cod:"500E0500027", label:"500E0500027 - FEDC"},
   {cod:"500E0100006", label:"500E0100006 - PRODEST"},
-  {cod:"500E0100001", label:"500E0100001 - RTV-ES"},
+  {cod:"500E0100001", label:"500E0100001 - RTV"},
   {cod:"500E0600004", label:"500E0600004 - CASA MILITAR"},
   {cod:"500E0600012", label:"500E0600012 - SEAG"},
   {cod:"500E0500006", label:"500E0500006 - FEAC"},
