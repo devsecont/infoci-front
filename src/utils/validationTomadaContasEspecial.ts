@@ -56,6 +56,8 @@ const validationSchema = yup.object({
 
     tomadaContasEspecialMotivoBaixaDebito: yup
     .number()
+    .when('tomadaContasEspecialSituacaoEm31do12', (tomadaContasEspecialSituacaoEm31do12, field) => 
+      tomadaContasEspecialSituacaoEm31do12 === 4 ? field.required('O campo é obrigatório') : field)
     
 });
 
