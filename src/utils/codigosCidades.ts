@@ -122,6 +122,7 @@ const codigosCidades = [
   {cod:"500D1400001", label:"500D1400001 - DEFENSORIA PUBLICA"},
   {cod:"500D0500001", label:"500D0500001 - FADEPES"},
   {cod:"500L1100001", label:"500L1100001 - ALES"},
+  {cod:"500E0500022", label:"500E0500022 - FSPMES"},
   {cod:"511T1111111", label:"511T1111111 - SECONT-TESTE"},
   {cod:"522T2222222", label:"522T2222222 - FECC-TESTE"},
 ]
