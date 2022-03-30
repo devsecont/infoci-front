@@ -123,6 +123,8 @@ const codigosCidades = [
   {cod:"500D0500001", label:"500D0500001 - FADEPES"},
   {cod:"500L1100001", label:"500L1100001 - ALES"},
   {cod:"500E0500022", label:"500E0500022 - FSPMES"},
+  {cod:"500E1900005", label:"500E1900005 - HSL"},
+  {cod:"500E1900014", label:"500E1900014 - HIMABA"},
   {cod:"511T1111111", label:"511T1111111 - SECONT-TESTE"},
   {cod:"522T2222222", label:"522T2222222 - FECC-TESTE"},
 ]
