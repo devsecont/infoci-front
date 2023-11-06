@@ -6,6 +6,7 @@ interface DataTomadaContasEspecialProps {
   id: number
   tomadaContasEspecialIdNumRegistro: string
   tomadaContasEspecialCodigoUnidadeGestora: string
+  tomadaContasEspecialTipoTce: string
   tomadaContasEspecialProcesso: string
   tomadaContasEspecialAnoProcesso: string
   tomadaContasEspecialFatoMotivo: string
@@ -13,8 +14,8 @@ interface DataTomadaContasEspecialProps {
   tomadaContasEspecialDataInstauracao: string
   tomadaContasEspecialDataEnvioTribunalContas: string
   tomadaContasEspecialValorDebito: string
-  tomadaContasEspecialSituacaoEm31do12: string
-  tomadaContasEspecialMotivoBaixaDebito: string
+  tomadaContasEspecialSituacaoEm31do12InstauradaUg: string
+  tomadaContasEspecialSituacaoEm31do12EnviadaTcees: string
 }
 
 interface PropsType {
@@ -52,6 +53,21 @@ export const TomadaContasEspecialReport = ({
               value={codCidades ? codCidades.label : ''}
               disabled
             />
+            
+            <TextField
+              variant="standard"
+              fullWidth
+              select
+              inputProps={{ MenuProps: { disableScrollLock: true } }}
+              id="tomadaContasEspecialTipoTce"
+              name="tomadaContasEspecialTipoTce"
+              value={data.tomadaContasEspecialTipoTce}
+              label="Tipo de Tomada de Contas Especial"
+              disabled
+            >
+              <MenuItem value={1}>1 – Instaurada de ofício</MenuItem>
+              <MenuItem value={2}>2 - Determinada pelo TCEES</MenuItem>
+            </TextField>
 
             <TextField
               variant="standard"
@@ -148,7 +164,7 @@ export const TomadaContasEspecialReport = ({
               variant="standard"
               fullWidth
               id="tomadaContasEspecialValorDebito"
-              label="Valor Original do Débito"
+              label="Valor Original do Débito - R$"
               name="tomadaContasEspecialValorDebito"
               value={data.tomadaContasEspecialValorDebito}
               disabled
@@ -159,21 +175,23 @@ export const TomadaContasEspecialReport = ({
               fullWidth
               select
               inputProps={{ MenuProps: { disableScrollLock: true } }}
-              id="tomadaContasEspecialSituacaoEm31do12"
-              name="tomadaContasEspecialSituacaoEm31do12"
-              value={data.tomadaContasEspecialSituacaoEm31do12}
+              id="tomadaContasEspecialSituacaoEm31do12InstauradaUg"
+              name="tomadaContasEspecialSituacaoEm31do12InstauradaUg"
+              value={data.tomadaContasEspecialSituacaoEm31do12InstauradaUg}
               label="Situação da Tomada de Contas Especial em
-      31 de dezembro do Exercício referência da
-      Prestação de Contas Anual"
+                31 de dezembro do Exercício referência da
+                Prestação de Contas Situação da Tomada de Contas Especial em 
+                31 de dezembro do Exercício referência da 
+                Prestação de Contas Anual, referente as 
+                TCE’s instauradas na UG e ainda não 
+                encaminhadas ao TCEESAnual"
               disabled
             >
-              <MenuItem value={1}>1 - Em instrução dentro do prazo;</MenuItem>
-              <MenuItem value={2}>2 - Em instrução fora do prazo;</MenuItem>
-              <MenuItem value={3}>
-                3 - Em complementação de informações determinada pelo Tribunal
-                de Contas;
-              </MenuItem>
-              <MenuItem value={4}>4 - Finalizada;</MenuItem>
+              <MenuItem value={1}>1 - Aguardando o início da instrução</MenuItem>
+              <MenuItem value={2}>2 - Em instrução dentro do prazo</MenuItem>
+              <MenuItem value={3}>3 - Em instrução fora do prazo</MenuItem>
+              <MenuItem value={4}>4 - Finalizada – Dispensado o encaminhamento ao TCEES – art. 9º, IN 32/2014;</MenuItem>
+              <MenuItem value={5}>5 - Finalizada - Arquivada antes do encaminhamento ao TCEES – art. 10, IN 32/2014</MenuItem>
             </TextField>
 
             <TextField
@@ -181,31 +199,19 @@ export const TomadaContasEspecialReport = ({
               fullWidth
               select
               inputProps={{ MenuProps: { disableScrollLock: true } }}
-              id="tomadaContasEspecialMotivoBaixaDebito"
-              name="tomadaContasEspecialMotivoBaixaDebito"
-              value={data.tomadaContasEspecialMotivoBaixaDebito}
-              label="Motivo da Baixa da Responsabilidade pelo
-      Débito"
+              id="tomadaContasEspecialSituacaoEm31do12EnviadaTcees"
+              name="tomadaContasEspecialSituacaoEm31do12EnviadaTcees"
+              value={data.tomadaContasEspecialSituacaoEm31do12EnviadaTcees}
+              label="Situação da Tomada de Contas Especial em 
+                31 de dezembro do Exercício referência da 
+                Prestação de Contas Anual, referente as 
+                TCE’s já encaminhadas ao TCEES."
               disabled
             >
-              <MenuItem value={1}>
-                1 - Elisão da responsabilidade pelo dano inicialmente imputada
-                ao responsável;
-              </MenuItem>
-              <MenuItem value={2}>
-                2 - Ausência de comprovação do dano;
-              </MenuItem>
-              <MenuItem value={3}>
-                3 - Arquivamento do processo por falta de pressupostos de
-                instauração ou do seu desenvolvimento regular;
-              </MenuItem>
-              <MenuItem value={4}>
-                4 - Contas consideradas iliquidáveis, nos termos do art. 90 da
-                Lei Complementar Estadual n° 621/2012;
-              </MenuItem>
-              <MenuItem value={5}>
-                5 - Quitação ao responsável pelo recolhimento do débito.
-              </MenuItem>
+              <MenuItem value={1}>1 - Finalizada - Aguardando deliberação do TCEES</MenuItem>
+              <MenuItem value={2}>2 - Com decisão do TCEES pela condenação ao ressarcimento / Sem baixa da responsabilidade pelo débito</MenuItem>
+              <MenuItem value={3}>3 - Com decisão do TCEES pela baixa da responsabilidade pelo débito – art. 20, da IN 32/2014</MenuItem>
+              <MenuItem value={4}>4 - Em complementação de informações, após retorno determinado pelo TCEES – art. 15, IN 32/2014</MenuItem>
             </TextField>
           </div>
         )

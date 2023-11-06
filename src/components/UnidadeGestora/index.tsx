@@ -1,6 +1,6 @@
 import { useFormik } from 'formik'
 
-import { TextField, MenuItem, Button, IconButton, Autocomplete } from '@mui/material'
+import { TextField, MenuItem, Button, IconButton, Autocomplete, Box, Tooltip, Collapse, Modal, Typography } from '@mui/material'
 import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight'
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft'
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle'
@@ -15,18 +15,39 @@ import baseAPI from '../../utils/baseAPI'
 import { ConfirmDialog } from '../ConfirmDialog'
 import { AlertSucess } from '../AlertSucess'
 import codigosCidades from '../../utils/codigosCidades'
+import { InfoOutlined } from '@mui/icons-material'
+import ModalExplicacaoCampo from '../ModalExplicacaoCampo'
 
 interface DataUnidadeGestoraProps {
   id: number
   unidadeGestoraIdNumRegistro: string
   unidadeGestoraNivelControleInterno: string
   unidadeGestoraCodigoUnidadeGestora: string
-  unidadeGestoraResponsavelUnidadeGestora: string
-  unidadeGestoraExercicioUltimaManifestacaoControleInterno: string
   unidadeGestoraOpiniaoPrestacaoContasControleInterno: string
+  unidadeGestoraFatoRelevanteRelaci: string
+  unidadeGestoraAssuntoPrincipalFatoRelevanteRelaci: string
 }
 
+const modalStyle = {
+  position: 'absolute' as 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: "50vw",
+  height: "max-content",
+  bgcolor: 'background.paper',
+  borderRadius: "5px",
+  border: "1px solid black",
+  boxShadow: 24,
+  p: "2rem",
+};
+
 export const UnidadeGestora = () => {
+  
+  const [modalOpen, setModalOpen] = useState(false);
+  const [textoModalCampo, setTextoModalCampo] = useState("");
+  const [videoModalCampo, setVideoModalCampo] = useState("");
+
   const context = useContext(GlobalContext)
   const navigate = useNavigate()
   const token = localStorage.getItem('app-token')
@@ -93,12 +114,12 @@ export const UnidadeGestora = () => {
             data.unidadeGestoraNivelControleInterno,
           unidadeGestoraCodigoUnidadeGestora:
             data.unidadeGestoraCodigoUnidadeGestora,
-          unidadeGestoraResponsavelUnidadeGestora:
-            data.unidadeGestoraResponsavelUnidadeGestora,
-          unidadeGestoraExercicioUltimaManifestacaoControleInterno:
-            data.unidadeGestoraExercicioUltimaManifestacaoControleInterno,
           unidadeGestoraOpiniaoPrestacaoContasControleInterno:
             data.unidadeGestoraOpiniaoPrestacaoContasControleInterno,
+          unidadeGestoraFatoRelevanteRelaci:
+            data.unidadeGestoraFatoRelevanteRelaci,
+          unidadeGestoraAssuntoPrincipalFatoRelevanteRelaci:
+            data.unidadeGestoraAssuntoPrincipalFatoRelevanteRelaci,
         }
       },
     )
@@ -131,9 +152,9 @@ export const UnidadeGestora = () => {
         context.formInfo.nomeUnidadeGestora !== 'SECONT' ? 2 : ''
       }`,
       unidadeGestoraCodigoUnidadeGestora: `${context.formInfo.nomeUnidadeGestora !== 'SECONT' ? context.formInfo.codigoUnidadeGestoraCidades : ''}`,
-      unidadeGestoraResponsavelUnidadeGestora: ``,
-      unidadeGestoraExercicioUltimaManifestacaoControleInterno: ``,
       unidadeGestoraOpiniaoPrestacaoContasControleInterno: ``,
+      unidadeGestoraFatoRelevanteRelaci: ``,
+      unidadeGestoraAssuntoPrincipalFatoRelevanteRelaci: ``,
     }
     await axios.post(
       `${baseAPI.URL}/forms/${context.formInfo.id}/unidades`,
@@ -184,7 +205,6 @@ export const UnidadeGestora = () => {
     setSelectUnidadeGestora(e.target.value)
   }
 
-
   const initialValues = {
     unidadeGestoraIdNumRegistro: `${
       dataUnidadeGestora.length > 0 &&
@@ -201,21 +221,21 @@ export const UnidadeGestora = () => {
       dataUnidadeGestora[selectUnidadeGestora]
         .unidadeGestoraCodigoUnidadeGestora : ''
     }`,
-    unidadeGestoraResponsavelUnidadeGestora: `${
-      dataUnidadeGestora.length > 0 &&
-      dataUnidadeGestora[selectUnidadeGestora]
-        .unidadeGestoraResponsavelUnidadeGestora
-    }`,
-    unidadeGestoraExercicioUltimaManifestacaoControleInterno: `${
-      dataUnidadeGestora.length > 0 &&
-      dataUnidadeGestora[selectUnidadeGestora]
-        .unidadeGestoraExercicioUltimaManifestacaoControleInterno
-    }`,
     unidadeGestoraOpiniaoPrestacaoContasControleInterno: `${
       dataUnidadeGestora.length > 0
         ? dataUnidadeGestora[selectUnidadeGestora]
             .unidadeGestoraOpiniaoPrestacaoContasControleInterno
         : ''
+    }`,
+    unidadeGestoraFatoRelevanteRelaci: `${
+      dataUnidadeGestora.length > 0 &&
+      dataUnidadeGestora[selectUnidadeGestora]
+        .unidadeGestoraFatoRelevanteRelaci
+    }`,
+    unidadeGestoraAssuntoPrincipalFatoRelevanteRelaci: `${
+      dataUnidadeGestora.length > 0 &&
+      dataUnidadeGestora[selectUnidadeGestora]
+        .unidadeGestoraAssuntoPrincipalFatoRelevanteRelaci
     }`,
   }
 
@@ -241,6 +261,11 @@ export const UnidadeGestora = () => {
     setButtonId(e.target.parentNode.id)
   }
 
+  useEffect(() => {
+    if(formik.values.unidadeGestoraFatoRelevanteRelaci != '1'){
+      formik.setFieldValue('unidadeGestoraAssuntoPrincipalFatoRelevanteRelaci', '')
+    }
+  }, [formik.values.unidadeGestoraFatoRelevanteRelaci])
   return (
     <UnidadeGestoraStyle onSubmit={formik.handleSubmit}>
       <div data-header="header-form">
@@ -290,69 +315,77 @@ export const UnidadeGestora = () => {
       </div>
 
       <legend>Informações de Controle Interno - Unidade Gestora</legend>
+      <Box sx={{display: 'flex', gap: '1rem'}}>
+        <TextField
+          variant="outlined"
+          fullWidth
+          id="unidadeGestoraIdNumRegistro"
+          label="Identificação do Número do Registro"
+          name="unidadeGestoraIdNumRegistro"
+          value={formik.values.unidadeGestoraIdNumRegistro}
+          onChange={formik.handleChange}
+          error={
+            formik.touched.unidadeGestoraIdNumRegistro &&
+            Boolean(formik.errors.unidadeGestoraIdNumRegistro)
+          }
+          helperText={
+            formik.touched.unidadeGestoraIdNumRegistro &&
+            formik.errors.unidadeGestoraIdNumRegistro
+          }
+          disabled
+        />
+        
+      </Box>
 
-      <TextField
-        variant="outlined"
-        fullWidth
-        id="unidadeGestoraIdNumRegistro"
-        label="Identificação do Número do Registro"
-        name="unidadeGestoraIdNumRegistro"
-        value={formik.values.unidadeGestoraIdNumRegistro}
-        onChange={formik.handleChange}
-        error={
-          formik.touched.unidadeGestoraIdNumRegistro &&
-          Boolean(formik.errors.unidadeGestoraIdNumRegistro)
-        }
-        helperText={
-          formik.touched.unidadeGestoraIdNumRegistro &&
-          formik.errors.unidadeGestoraIdNumRegistro
-        }
-        disabled
-      />
-
-      <TextField
-        fullWidth
-        select
-        inputProps={{ MenuProps: { disableScrollLock: true } }}
-        id="unidadeGestoraNivelControleInterno"
-        name="unidadeGestoraNivelControleInterno"
-        value={formik.values.unidadeGestoraNivelControleInterno}
-        label="Nível de Controle Interno"
-        onChange={formik.handleChange}
-        error={
-          formik.touched.unidadeGestoraNivelControleInterno &&
-          Boolean(formik.errors.unidadeGestoraNivelControleInterno)
-        }
-        helperText={
-          formik.touched.unidadeGestoraNivelControleInterno &&
-          formik.errors.unidadeGestoraNivelControleInterno
-        }
-        disabled={
-          context.formInfo.nomeUnidadeGestora !== 'SECONT' ? true : false
-        }
-      >
-        <MenuItem value={1}>1 – Unidade Central </MenuItem>
-        <MenuItem value={2}>2 – Unidade Setorial</MenuItem>
-      </TextField>
-
-      {context.formInfo.nomeUnidadeGestora !== 'SECONT' ? <TextField
-        variant="outlined"
-        fullWidth
-        id="unidadeGestoraCodigoUnidadeGestora"
-        label="Código da unidade Gestora em que os procedimentos foram aplicados"
-        name="unidadeGestoraCodigoUnidadeGestora"
-        value={formik.values.unidadeGestoraCodigoUnidadeGestora}
-        onChange={formik.handleChange}
-        error={
-          formik.touched.unidadeGestoraCodigoUnidadeGestora &&
-          Boolean(formik.errors.unidadeGestoraCodigoUnidadeGestora)
-        }
-        helperText={
-          formik.touched.unidadeGestoraCodigoUnidadeGestora &&
-          formik.errors.unidadeGestoraCodigoUnidadeGestora
-        }
-        disabled
-      /> : <Autocomplete
+      <Box sx={{display: 'flex', gap: '1rem'}}>
+        <TextField
+          fullWidth
+          select
+          inputProps={{ MenuProps: { disableScrollLock: true } }}
+          id="unidadeGestoraNivelControleInterno"
+          name="unidadeGestoraNivelControleInterno"
+          value={formik.values.unidadeGestoraNivelControleInterno}
+          label="Nível de Controle Interno"
+          onChange={formik.handleChange}
+          error={
+            formik.touched.unidadeGestoraNivelControleInterno &&
+            Boolean(formik.errors.unidadeGestoraNivelControleInterno)
+          }
+          helperText={
+            formik.touched.unidadeGestoraNivelControleInterno &&
+            formik.errors.unidadeGestoraNivelControleInterno
+          }
+          disabled={
+            context.formInfo.nomeUnidadeGestora !== 'SECONT' ? true : false
+          }
+        >
+          <MenuItem value={1}>1 – Unidade Central </MenuItem>
+          <MenuItem value={2}>2 – Unidade Setorial</MenuItem>
+        </TextField>
+        
+      </Box>
+      {context.formInfo.nomeUnidadeGestora !== 'SECONT' ? 
+      <Box sx={{display: 'flex', gap: '1rem'}}>
+        <TextField
+          variant="outlined"
+          fullWidth
+          id="unidadeGestoraCodigoUnidadeGestora"
+          label="Código da unidade Gestora em que os procedimentos foram aplicados"
+          name="unidadeGestoraCodigoUnidadeGestora"
+          value={formik.values.unidadeGestoraCodigoUnidadeGestora}
+          onChange={formik.handleChange}
+          error={
+            formik.touched.unidadeGestoraCodigoUnidadeGestora &&
+            Boolean(formik.errors.unidadeGestoraCodigoUnidadeGestora)
+          }
+          helperText={
+            formik.touched.unidadeGestoraCodigoUnidadeGestora &&
+            formik.errors.unidadeGestoraCodigoUnidadeGestora
+          }
+          disabled
+        />
+        
+      </Box> : <Autocomplete
       id="unidadeGestoraCodigoUnidadeGestora"
       options={codigosCidades}
       noOptionsText={'Não encontrado'}
@@ -371,95 +404,150 @@ export const UnidadeGestora = () => {
       }}
      
       renderInput={(params) => (
-        <TextField
-          {...params}
-          name="unidadeGestoraCodigoUnidadeGestora"
-          label="Código da unidade Gestora em que os procedimentos foram aplicados"
-          variant="outlined"
-          error={
-            formik.touched.unidadeGestoraCodigoUnidadeGestora &&
-            Boolean(formik.errors.unidadeGestoraCodigoUnidadeGestora)
-          }
-          helperText={
-            formik.touched.unidadeGestoraCodigoUnidadeGestora &&
-            formik.errors.unidadeGestoraCodigoUnidadeGestora
-          }
-          fullWidth
-        />
+        <Box sx={{display: 'flex', gap: '1rem'}}>
+          <TextField
+            {...params}
+            name="unidadeGestoraCodigoUnidadeGestora"
+            label="Código da unidade Gestora em que os procedimentos foram aplicados"
+            variant="outlined"
+            error={
+              formik.touched.unidadeGestoraCodigoUnidadeGestora &&
+              Boolean(formik.errors.unidadeGestoraCodigoUnidadeGestora)
+            }
+            helperText={
+              formik.touched.unidadeGestoraCodigoUnidadeGestora &&
+              formik.errors.unidadeGestoraCodigoUnidadeGestora
+            }
+            fullWidth
+          />
+          
+      </Box>
       )}
     /> }
+      <Box sx={{display: 'flex', gap: '1rem'}}>
+        <TextField
+          fullWidth
+          select
+          inputProps={{ MenuProps: { disableScrollLock: true } }}
+          id="unidadeGestoraOpiniaoPrestacaoContasControleInterno"
+          name="unidadeGestoraOpiniaoPrestacaoContasControleInterno"
+          value={
+            formik.values.unidadeGestoraOpiniaoPrestacaoContasControleInterno
+          }
+          label="Opinião do Controle Interno sobre os procedimentos aplicados"
+          onChange={formik.handleChange}
+          error={
+            formik.touched.unidadeGestoraOpiniaoPrestacaoContasControleInterno &&
+            Boolean(
+              formik.errors.unidadeGestoraOpiniaoPrestacaoContasControleInterno,
+            )
+          }
+          helperText={
+            formik.touched.unidadeGestoraOpiniaoPrestacaoContasControleInterno &&
+            formik.errors.unidadeGestoraOpiniaoPrestacaoContasControleInterno
+          }
+        >
+          <MenuItem value={1}>1 - Regular</MenuItem>
+          <MenuItem value={2}>2 - Regular com ressalva</MenuItem>
+          <MenuItem value={3}>3 - Irregular</MenuItem>
+          <MenuItem value={4}>4 - Não foi emitida opinião</MenuItem>
+        </TextField>
+        
+      </Box>
+      <Box sx={{display: 'flex', gap: '1rem'}}>
+        <TextField
+          fullWidth
+          select
+          inputProps={{ MenuProps: { disableScrollLock: true } }}
+          id="unidadeGestoraFatoRelevanteRelaci"
+          name="unidadeGestoraFatoRelevanteRelaci"
+          value={
+            formik.values.unidadeGestoraFatoRelevanteRelaci
+          }
+          label="O Controle Interno relatou algum fato 
+            relevante no RELACI, de forma a dar ciência 
+            ao Tribunal de Contas?"
+          onChange={(e) => {formik.handleChange(e); if(e.target.value == "2"){formik.setFieldValue("unidadeGestoraAssuntoPrincipalFatoRelevanteRelaci", "")}}}
+          error={
+            formik.touched.unidadeGestoraFatoRelevanteRelaci &&
+            Boolean(
+              formik.errors.unidadeGestoraFatoRelevanteRelaci,
+            )
+          }
+          helperText={
+            formik.touched.unidadeGestoraFatoRelevanteRelaci &&
+            formik.errors.unidadeGestoraFatoRelevanteRelaci
+          }
+        >
+          <MenuItem value="">{`Em Branco`}</MenuItem>
+          <MenuItem value={1}>1 - Sim</MenuItem>
+          <MenuItem value={2}>2 - Não</MenuItem>
+        </TextField>
+        
+      </Box>
 
-      <TextField
-        variant="outlined"
-        fullWidth
-        id="unidadeGestoraResponsavelUnidadeGestora"
-        label="Responsável pela Unidade Gestora"
-        name="unidadeGestoraResponsavelUnidadeGestora"
-        value={formik.values.unidadeGestoraResponsavelUnidadeGestora}
-        onChange={formik.handleChange}
-        error={
-          formik.touched.unidadeGestoraResponsavelUnidadeGestora &&
-          Boolean(formik.errors.unidadeGestoraResponsavelUnidadeGestora)
-        }
-        helperText={
-          formik.touched.unidadeGestoraResponsavelUnidadeGestora &&
-          formik.errors.unidadeGestoraResponsavelUnidadeGestora
-        }
-      />
-
-      <TextField
-        variant="outlined"
-        fullWidth
-        id="unidadeGestoraExercicioUltimaManifestacaoControleInterno"
-        label="Exercício da Última Manifestação do Controle Interno"
-        name="unidadeGestoraExercicioUltimaManifestacaoControleInterno"
-        value={
-          formik.values.unidadeGestoraExercicioUltimaManifestacaoControleInterno
-        }
-        onChange={formik.handleChange}
-        error={
-          formik.touched
-            .unidadeGestoraExercicioUltimaManifestacaoControleInterno &&
-          Boolean(
-            formik.errors
-              .unidadeGestoraExercicioUltimaManifestacaoControleInterno,
-          )
-        }
-        helperText={
-          formik.touched
-            .unidadeGestoraExercicioUltimaManifestacaoControleInterno &&
-          formik.errors.unidadeGestoraExercicioUltimaManifestacaoControleInterno
-        }
-      />
-
-      <TextField
-        fullWidth
-        select
-        inputProps={{ MenuProps: { disableScrollLock: true } }}
-        id="unidadeGestoraOpiniaoPrestacaoContasControleInterno"
-        name="unidadeGestoraOpiniaoPrestacaoContasControleInterno"
-        value={
-          formik.values.unidadeGestoraOpiniaoPrestacaoContasControleInterno
-        }
-        label="Opinião do Controle Interno sobre os procedimentos aplicados"
-        onChange={formik.handleChange}
-        error={
-          formik.touched.unidadeGestoraOpiniaoPrestacaoContasControleInterno &&
-          Boolean(
-            formik.errors.unidadeGestoraOpiniaoPrestacaoContasControleInterno,
-          )
-        }
-        helperText={
-          formik.touched.unidadeGestoraOpiniaoPrestacaoContasControleInterno &&
-          formik.errors.unidadeGestoraOpiniaoPrestacaoContasControleInterno
-        }
-      >
-        <MenuItem value={1}>1 - Regular</MenuItem>
-        <MenuItem value={2}>2 - Regular com ressalva</MenuItem>
-        <MenuItem value={3}>3 - Irregular</MenuItem>
-        <MenuItem value={4}>4 - Não foi emitida opinião</MenuItem>
-      </TextField>
-
+      <Box sx={{display: formik.values.unidadeGestoraFatoRelevanteRelaci == "1"?'flex': 'none', gap: '1rem'}}>
+        <TextField
+          fullWidth
+          select
+          inputProps={{ MenuProps: { disableScrollLock: true } }}
+          id="unidadeGestoraAssuntoPrincipalFatoRelevanteRelaci"
+          name="unidadeGestoraAssuntoPrincipalFatoRelevanteRelaci"
+          value={
+            formik.values.unidadeGestoraAssuntoPrincipalFatoRelevanteRelaci
+          }
+          label="Assunto principal do fato relevante relatadono RELACI"
+          onChange={formik.handleChange}
+          error={
+            formik.touched.unidadeGestoraAssuntoPrincipalFatoRelevanteRelaci &&
+            Boolean(
+              formik.errors.unidadeGestoraAssuntoPrincipalFatoRelevanteRelaci,
+            )
+          }
+          helperText={
+            formik.touched.unidadeGestoraAssuntoPrincipalFatoRelevanteRelaci &&
+            formik.errors.unidadeGestoraAssuntoPrincipalFatoRelevanteRelaci
+          }
+        >
+          <MenuItem value={1}>
+            1 - Licitações, Contratos e Convênios
+          </MenuItem>
+          <MenuItem value={2}>
+            2 - Folha de Pagamento e Concessão de Vantagens
+          </MenuItem>
+          <MenuItem value={3}>
+            3 - Registro de Atos de Pessoal
+          </MenuItem>
+          <MenuItem value={4}>
+            4 - Gestão de Previdência dos RPPS
+          </MenuItem>
+          <MenuItem value={5}>
+            5 - Concessão de diárias e suprimento de fundos
+          </MenuItem>
+          <MenuItem value={6}>
+            6 - Instrumentos de transparência
+          </MenuItem>
+          <MenuItem value={7}>
+            7 - Gestão Fiscal
+          </MenuItem>
+          <MenuItem value={8}>
+            8 - Gestão Orçamentária e Financeira
+          </MenuItem>
+          <MenuItem value={9}>
+            9 - Gestão Patrimonial
+          </MenuItem>
+          <MenuItem value={10}>
+            10 - Saúde e Educação
+          </MenuItem>
+          <MenuItem value={11}>
+            11 - Obras e Serviços de Engenharia
+          </MenuItem>
+          <MenuItem value={99}>
+            99 - Outros
+          </MenuItem>
+        </TextField>
+        
+      </Box>
       <div data-button="next-previous">
         <IconButton
           title="Anterior"
@@ -495,6 +583,19 @@ export const UnidadeGestora = () => {
         setOpen={setOpenAlertSave}
         message={'Os dados da Unidade Gestora foram salvos.'}
       />
+      <Collapse in={modalOpen} unmountOnExit>
+        <Button onClick={() => setModalOpen(true)}>Open modal</Button>
+        <Modal
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={modalStyle}>
+            <ModalExplicacaoCampo texto={textoModalCampo} video={videoModalCampo}/>
+          </Box>
+        </Modal>
+      </Collapse>
     </UnidadeGestoraStyle>
   )
 }

@@ -19,6 +19,7 @@ import { TomadaContasEspecial } from '../TomadaContasEspecial'
 import { GlobalContext } from '../../context/GlobalStorage'
 import { GenerateXML } from '../GenerateXML'
 import { useLocation } from 'react-router-dom';
+import { Button } from '@mui/material';
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -78,6 +79,7 @@ export const FormInfoci = () => {
         <p>Clique no botão <span>SALVAR</span> caso deseje salvar as informações e terminar o preenchimento em outro momento.</p></>}
         {context.valueTab === 2 && <p>Após clicar no botão <span>Próximo</span> será perguntado se deseja incluir outro Procedimento.</p>}
         {context.valueTab === 3 && <p>Após clicar no botão <span>Próximo</span> será perguntado se deseja incluir outra Tomada de Contas Especial.</p>}
+        <Button variant='text' href='https://secont.es.gov.br/faq-infoci' target="_blank">Instruções de como preencher o formulário.</Button>
       </div>
       <Box sx={{ width: '100%' }}>
         <Box sx={{ borderBottom: 1 }} style={{ background: 'var(--blue-300)' }} data-tab="tab">

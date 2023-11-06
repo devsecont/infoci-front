@@ -1,5 +1,7 @@
 import * as yup from "yup";
 
+const regexDecimal =  /^\d{1,14}\.\d{2}$/;
+
 const validationSchema = yup.object({
   procedimentosIdNumRegistro: yup
     .string()
@@ -29,16 +31,23 @@ const validationSchema = yup.object({
     .string()
     .when('procedimentosTipoPontoControle', (procedimentosTipoPontoControle, field) => 
           procedimentosTipoPontoControle === 1 ? field.required('O campo é obrigatório') : field)
-    .matches(/^[0-9]+$/, "Apenas números")
-    .max(5, 'Máximo de 5 dígitos'),
+    .matches(regexDecimal, "Apenas números com ponto decimal ex: 100.00, 10152.20, 85424.65, etc."),
     
     procedimentosAmostraSelecionada: yup
     .string()
     .when('procedimentosTipoPontoControle', (procedimentosTipoPontoControle, field) => 
           procedimentosTipoPontoControle === 1 ? field.required('O campo é obrigatório') : field)
-    .matches(/^[0-9]+$/, "Apenas números")
-    .max(5, 'Máximo de 5 dígitos'),
+    .matches(regexDecimal, "Apenas números com ponto decimal ex: 100.00, 10152.20, 85424.65, etc."),
 
+    procedimentosUnidadeAmostraSelecionada: yup
+    .number()
+    .when('procedimentosTipoPontoControle', (procedimentosTipoPontoControle, field) => 
+          procedimentosTipoPontoControle === 1 ? field.required('O campo é obrigatório') : field),
+    procedimentosDescricaoAmostraSelecionada: yup
+    .string()
+    .required('O campo é obrigatório')
+    .max(1000, 'Máximo de 1000 dígitos'),
+    
     procedimentosDescricaoAnalise: yup
     .string()
     .required('O campo é obrigatório')

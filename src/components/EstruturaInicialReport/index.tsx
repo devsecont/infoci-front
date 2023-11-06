@@ -97,7 +97,7 @@ export const EstruturaInicialReport = ({ dataEstruturaInicial }: PropsType) => {
               name="estruturaInicialNormaInternaGestaoOrcamentaria"
               value={data.estruturaInicialNormaInternaGestaoOrcamentaria}
               label="Normas internas estabelecendo procedimentos Orçamentária
-    para avaliação da Gestão"
+    para execução da Gestão"
               disabled
             >
               <MenuItem value={1}>1 - Existem somente os normativos</MenuItem>
@@ -106,7 +106,7 @@ export const EstruturaInicialReport = ({ dataEstruturaInicial }: PropsType) => {
               </MenuItem>
               <MenuItem value={3}>
                 3 - Existem normativos, fluxos e são de amplo conhecimento de
-                toda a administração
+                toda a administração envolvida no processo
               </MenuItem>
               <MenuItem value={4}>
                 4 - Não existem normas internas definidas no âmbito desta
@@ -122,7 +122,7 @@ export const EstruturaInicialReport = ({ dataEstruturaInicial }: PropsType) => {
               id="estruturaInicialNormaInternaGestaoFinanceira"
               name="estruturaInicialNormaInternaGestaoFinanceira"
               value={data.estruturaInicialNormaInternaGestaoFinanceira}
-              label="Normas internas estabelecendo procedimentos para avaliação da Gestão Financeira"
+              label="Normas internas estabelecendo procedimentos para execução da Gestão Financeira"
               disabled
             >
               <MenuItem value={1}>1 - Existem somente os normativos</MenuItem>
@@ -131,7 +131,7 @@ export const EstruturaInicialReport = ({ dataEstruturaInicial }: PropsType) => {
               </MenuItem>
               <MenuItem value={3}>
                 3 - Existem normativos, fluxos e são de amplo conhecimento de
-                toda a administração
+                toda a administração envolvida no processo
               </MenuItem>
               <MenuItem value={4}>
                 4 - Não existem normas internas definidas no âmbito desta
@@ -147,7 +147,7 @@ export const EstruturaInicialReport = ({ dataEstruturaInicial }: PropsType) => {
               id="estruturaInicialNormaInternaGestaoPatrimonial"
               name="estruturaInicialNormaInternaGestaoPatrimonial"
               value={data.estruturaInicialNormaInternaGestaoPatrimonial}
-              label="Normas internas estabelecendo procedimentos para avaliação da Gestão Patrimonial"
+              label="Normas internas estabelecendo procedimentos para execução da Gestão Patrimonial"
               disabled
             >
               <MenuItem value={1}>1 - Existem somente os normativos</MenuItem>
@@ -156,7 +156,7 @@ export const EstruturaInicialReport = ({ dataEstruturaInicial }: PropsType) => {
               </MenuItem>
               <MenuItem value={3}>
                 3 - Existem normativos, fluxos e são de amplo conhecimento de
-                toda a administração
+                toda a administração envolvida no processo
               </MenuItem>
               <MenuItem value={4}>
                 4 - Não existem normas internas definidas no âmbito desta
@@ -172,7 +172,7 @@ export const EstruturaInicialReport = ({ dataEstruturaInicial }: PropsType) => {
               id="estruturaInicialNormaInternaGestaoFiscal"
               name="estruturaInicialNormaInternaGestaoFiscal"
               value={data.estruturaInicialNormaInternaGestaoFiscal}
-              label="Normas internas estabelecendo procedimentos para avaliação da Gestão Fiscal"
+              label="Normas internas estabelecendo procedimentos para execução da Gestão Fiscal"
               disabled
             >
               <MenuItem value={1}>1 - Existem somente os normativos</MenuItem>
@@ -181,7 +181,7 @@ export const EstruturaInicialReport = ({ dataEstruturaInicial }: PropsType) => {
               </MenuItem>
               <MenuItem value={3}>
                 3 - Existem normativos, fluxos e são de amplo conhecimento de
-                toda a administração
+                toda a administração envolvida no processo
               </MenuItem>
               <MenuItem value={4}>
                 4 - Não existem normas internas definidas no âmbito desta
@@ -197,7 +197,7 @@ export const EstruturaInicialReport = ({ dataEstruturaInicial }: PropsType) => {
               id="estruturaInicialNormaInternaDemContabeis"
               name="estruturaInicialNormaInternaDemContabeis"
               value={data.estruturaInicialNormaInternaDemContabeis}
-              label="Normas internas estabelecendo procedimentos para avaliação da conformidade da política e escrituração contábil, e elaboração das Demonstrações Contábeis"
+              label="Normas internas estabelecendo procedimentos para execução da conformidade da política e escrituração contábil, e elaboração das Demonstrações Contábeis"
               disabled
             >
               <MenuItem value={1}>1 - Existem somente os normativos</MenuItem>
@@ -206,7 +206,7 @@ export const EstruturaInicialReport = ({ dataEstruturaInicial }: PropsType) => {
               </MenuItem>
               <MenuItem value={3}>
                 3 - Existem normativos, fluxos e são de amplo conhecimento de
-                toda a administração
+                toda a administração envolvida no processo
               </MenuItem>
               <MenuItem value={4}>
                 4 - Não existem normas internas definidas no âmbito desta

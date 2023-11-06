@@ -42,9 +42,9 @@ interface DataUnidadeGestoraProps {
   unidadeGestoraIdNumRegistro: string
   unidadeGestoraNivelControleInterno: string
   unidadeGestoraCodigoUnidadeGestora: string
-  unidadeGestoraResponsavelUnidadeGestora: string
-  unidadeGestoraExercicioUltimaManifestacaoControleInterno: string
   unidadeGestoraOpiniaoPrestacaoContasControleInterno: string
+  unidadeGestoraFatoRelevanteRelaci: string
+  unidadeGestoraAssuntoPrincipalFatoRelevanteRelaci: string
 }
 
 interface DataProcedimentoProps {
@@ -56,6 +56,8 @@ interface DataProcedimentoProps {
   procedimentosTipoPontoControle: string
   procedimentosUniversoAnalisado: string
   procedimentosAmostraSelecionada: string
+  procedimentosUnidadeAmostraSelecionada: string
+  procedimentosDescricaoAmostraSelecionada: string
   procedimentosDescricaoAnalise: string
   procedimentosTipoProcedimentoAnalisado: string
   procedimentosSituacaoAnalise: string
@@ -64,6 +66,7 @@ interface DataTomadaContasEspecialProps {
   id: number
   tomadaContasEspecialIdNumRegistro: string
   tomadaContasEspecialCodigoUnidadeGestora: string
+  tomadaContasEspecialTipoTce: string
   tomadaContasEspecialProcesso: string
   tomadaContasEspecialAnoProcesso: string
   tomadaContasEspecialFatoMotivo: string
@@ -71,8 +74,8 @@ interface DataTomadaContasEspecialProps {
   tomadaContasEspecialDataInstauracao: string
   tomadaContasEspecialDataEnvioTribunalContas: string
   tomadaContasEspecialValorDebito: string
-  tomadaContasEspecialSituacaoEm31do12: string
-  tomadaContasEspecialMotivoBaixaDebito: string
+  tomadaContasEspecialSituacaoEm31do12InstauradaUg: string
+  tomadaContasEspecialSituacaoEm31do12EnviadaTcees: string
 }
 
 
@@ -187,12 +190,12 @@ export const GenerateXML = () => {
               data.unidadeGestoraNivelControleInterno,
             unidadeGestoraCodigoUnidadeGestora:
               data.unidadeGestoraCodigoUnidadeGestora,
-            unidadeGestoraResponsavelUnidadeGestora:
-              data.unidadeGestoraResponsavelUnidadeGestora,
-            unidadeGestoraExercicioUltimaManifestacaoControleInterno:
-              data.unidadeGestoraExercicioUltimaManifestacaoControleInterno,
             unidadeGestoraOpiniaoPrestacaoContasControleInterno:
               data.unidadeGestoraOpiniaoPrestacaoContasControleInterno,
+            unidadeGestoraFatoRelevanteRelaci:
+              data.unidadeGestoraFatoRelevanteRelaci,
+            unidadeGestoraAssuntoPrincipalFatoRelevanteRelaci:
+              data.unidadeGestoraAssuntoPrincipalFatoRelevanteRelaci,
           }
         },
       )
@@ -222,6 +225,10 @@ export const GenerateXML = () => {
             procedimentosUniversoAnalisado: data.procedimentosUniversoAnalisado,
             procedimentosAmostraSelecionada:
               data.procedimentosAmostraSelecionada,
+            procedimentosUnidadeAmostraSelecionada:
+              data.procedimentosUnidadeAmostraSelecionada,
+            procedimentosDescricaoAmostraSelecionada:
+              data.procedimentosDescricaoAmostraSelecionada,
             procedimentosDescricaoAnalise: data.procedimentosDescricaoAnalise,
             procedimentosTipoProcedimentoAnalisado:
               data.procedimentosTipoProcedimentoAnalisado,
@@ -242,12 +249,14 @@ export const GenerateXML = () => {
 
       const dataGet: Array<DataTomadaContasEspecialProps> = await response.data.map(
         (data: DataTomadaContasEspecialProps) => {
+          console.log(data)
           return {
             id: data.id,
             tomadaContasEspecialIdNumRegistro:
               data.tomadaContasEspecialIdNumRegistro,
             tomadaContasEspecialCodigoUnidadeGestora:
               data.tomadaContasEspecialCodigoUnidadeGestora,
+            tomadaContasEspecialTipoTce: data.tomadaContasEspecialTipoTce,
             tomadaContasEspecialProcesso: data.tomadaContasEspecialProcesso,
             tomadaContasEspecialAnoProcesso:
               data.tomadaContasEspecialAnoProcesso,
@@ -260,10 +269,10 @@ export const GenerateXML = () => {
               data.tomadaContasEspecialDataEnvioTribunalContas,
             tomadaContasEspecialValorDebito:
               data.tomadaContasEspecialValorDebito,
-            tomadaContasEspecialSituacaoEm31do12:
-              data.tomadaContasEspecialSituacaoEm31do12,
-            tomadaContasEspecialMotivoBaixaDebito:
-              data.tomadaContasEspecialMotivoBaixaDebito,
+            tomadaContasEspecialSituacaoEm31do12InstauradaUg:
+              data.tomadaContasEspecialSituacaoEm31do12InstauradaUg,
+            tomadaContasEspecialSituacaoEm31do12EnviadaTcees:
+              data.tomadaContasEspecialSituacaoEm31do12EnviadaTcees
           }
         },
       )

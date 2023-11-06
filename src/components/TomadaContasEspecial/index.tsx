@@ -1,5 +1,5 @@
 import { useFormik } from 'formik'
-import { TextField, MenuItem, Button, IconButton, Autocomplete } from '@mui/material'
+import { TextField, MenuItem, Button, IconButton, Autocomplete, Tooltip, Box, Collapse, Modal } from '@mui/material'
 import { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -16,11 +16,14 @@ import { GlobalContext } from '../../context/GlobalStorage'
 import { ConfirmDialog } from '../ConfirmDialog'
 import { AlertSucess } from '../AlertSucess'
 import codigosCidades from '../../utils/codigosCidades'
+import { InfoOutlined } from '@mui/icons-material'
+import ModalExplicacaoCampo from '../ModalExplicacaoCampo'
 
 interface DataTomadaContasEspecialProps {
   id: number
   tomadaContasEspecialIdNumRegistro: string
   tomadaContasEspecialCodigoUnidadeGestora: string
+  tomadaContasEspecialTipoTce: string
   tomadaContasEspecialProcesso: string
   tomadaContasEspecialAnoProcesso: string
   tomadaContasEspecialFatoMotivo: string
@@ -28,11 +31,32 @@ interface DataTomadaContasEspecialProps {
   tomadaContasEspecialDataInstauracao: string
   tomadaContasEspecialDataEnvioTribunalContas: string
   tomadaContasEspecialValorDebito: string
-  tomadaContasEspecialSituacaoEm31do12: string
-  tomadaContasEspecialMotivoBaixaDebito: string
+  tomadaContasEspecialSituacaoEm31do12InstauradaUg: string
+  tomadaContasEspecialSituacaoEm31do12EnviadaTcees: string
 }
 
+const modalStyle = {
+  position: 'absolute' as 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: "50vw",
+  height: "max-content",
+  bgcolor: 'background.paper',
+  borderRadius: "5px",
+  border: "1px solid black",
+  boxShadow: 24,
+  p: "2rem",
+};
+
+const regexDate = /^\d{4}-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$/;
+
 export const TomadaContasEspecial = () => {
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [textoModalCampo, setTextoModalCampo] = useState("");
+  const [videoModalCampo, setVideoModalCampo] = useState("");
+
   const context = useContext(GlobalContext)
   const navigate = useNavigate()
   const token = localStorage.getItem('app-token')
@@ -110,6 +134,8 @@ export const TomadaContasEspecial = () => {
             data.tomadaContasEspecialIdNumRegistro,
           tomadaContasEspecialCodigoUnidadeGestora:
             data.tomadaContasEspecialCodigoUnidadeGestora,
+          tomadaContasEspecialTipoTce:
+            data.tomadaContasEspecialTipoTce,
           tomadaContasEspecialProcesso: data.tomadaContasEspecialProcesso,
           tomadaContasEspecialAnoProcesso: data.tomadaContasEspecialAnoProcesso,
           tomadaContasEspecialFatoMotivo: data.tomadaContasEspecialFatoMotivo,
@@ -119,10 +145,10 @@ export const TomadaContasEspecial = () => {
           tomadaContasEspecialDataEnvioTribunalContas:
             data.tomadaContasEspecialDataEnvioTribunalContas,
           tomadaContasEspecialValorDebito: data.tomadaContasEspecialValorDebito,
-          tomadaContasEspecialSituacaoEm31do12:
-            data.tomadaContasEspecialSituacaoEm31do12,
-          tomadaContasEspecialMotivoBaixaDebito:
-            data.tomadaContasEspecialMotivoBaixaDebito,
+          tomadaContasEspecialSituacaoEm31do12InstauradaUg:
+            data.tomadaContasEspecialSituacaoEm31do12InstauradaUg,
+          tomadaContasEspecialSituacaoEm31do12EnviadaTcees:
+            data.tomadaContasEspecialSituacaoEm31do12EnviadaTcees
         }
       },
     )
@@ -155,6 +181,7 @@ export const TomadaContasEspecial = () => {
     const valuesTCE = {
       tomadaContasEspecialIdNumRegistro: ``,
       tomadaContasEspecialCodigoUnidadeGestora: `${context.formInfo.nomeUnidadeGestora !== 'SECONT' ? context.formInfo.codigoUnidadeGestoraCidades : ''}`,
+      tomadaContasEspecialTipoTce: ``,
       tomadaContasEspecialProcesso: ``,
       tomadaContasEspecialAnoProcesso: ``,
       tomadaContasEspecialFatoMotivo: ``,
@@ -162,8 +189,8 @@ export const TomadaContasEspecial = () => {
       tomadaContasEspecialDataInstauracao: ``,
       tomadaContasEspecialDataEnvioTribunalContas: ``,
       tomadaContasEspecialValorDebito: ``,
-      tomadaContasEspecialSituacaoEm31do12: ``,
-      tomadaContasEspecialMotivoBaixaDebito: ``,
+      tomadaContasEspecialSituacaoEm31do12InstauradaUg: ``,
+      tomadaContasEspecialSituacaoEm31do12EnviadaTcees: ``
     }
     await axios.post(
       `${baseAPI.URL}/forms/${context.formInfo.id}/tomada_contas`,
@@ -248,9 +275,9 @@ export const TomadaContasEspecial = () => {
         context.formInfo.nomeUnidadeGestora !== 'SECONT' ? 2 : ''
       }`,
       unidadeGestoraCodigoUnidadeGestora: ``,
-      unidadeGestoraResponsavelUnidadeGestora: ``,
-      unidadeGestoraExercicioUltimaManifestacaoControleInterno: ``,
       unidadeGestoraOpiniaoPrestacaoContasControleInterno: ``,
+      unidadeGestoraFatoRelevanteRelaci: ``,
+      unidadeGestoraAssuntoPrincipalFatoRelevanteRelaci: ``,
     }
     await axios.post(
       `${baseAPI.URL}/forms/${context.formInfo.id}/unidades`,
@@ -277,6 +304,11 @@ export const TomadaContasEspecial = () => {
       dataTomadaContasEspecial.length ?
       dataTomadaContasEspecial[selectTomadaContasEspecial]
         .tomadaContasEspecialCodigoUnidadeGestora : ''
+    }`,
+    tomadaContasEspecialTipoTce: `${
+      dataTomadaContasEspecial.length ?
+      dataTomadaContasEspecial[selectTomadaContasEspecial]
+        .tomadaContasEspecialTipoTce : ''
     }`,
     tomadaContasEspecialProcesso: `${
       dataTomadaContasEspecial.length &&
@@ -314,19 +346,20 @@ export const TomadaContasEspecial = () => {
       dataTomadaContasEspecial[selectTomadaContasEspecial]
         .tomadaContasEspecialValorDebito
     }`,
-    tomadaContasEspecialSituacaoEm31do12: `${
+    tomadaContasEspecialSituacaoEm31do12InstauradaUg: `${
       dataTomadaContasEspecial.length
         ? dataTomadaContasEspecial[selectTomadaContasEspecial]
-            .tomadaContasEspecialSituacaoEm31do12
+            .tomadaContasEspecialSituacaoEm31do12InstauradaUg
         : ''
     }`,
-    tomadaContasEspecialMotivoBaixaDebito: `${
+    tomadaContasEspecialSituacaoEm31do12EnviadaTcees: `${
       dataTomadaContasEspecial.length
         ? dataTomadaContasEspecial[selectTomadaContasEspecial]
-            .tomadaContasEspecialMotivoBaixaDebito
+            .tomadaContasEspecialSituacaoEm31do12EnviadaTcees
         : ''
     }`,
   }
+
   const validationSchema = validationTomadaContasEspecial.validationSchema
 
   const formik = useFormik({
@@ -346,6 +379,10 @@ export const TomadaContasEspecial = () => {
     },
   })
 
+  const validaEnvio = () =>{
+    formik.setFieldValue('tomadaContasEspecialSituacaoEm31do12InstauradaUg',``);
+    formik.setFieldValue('tomadaContasEspecialSituacaoEm31do12EnviadaTcees',``);
+  }
   return (
     <TomadaContasEspecialraStyle onSubmit={formik.handleSubmit}>
       <div data-header="headerForm">
@@ -398,46 +435,51 @@ export const TomadaContasEspecial = () => {
       <legend>
         Informações de Controle Interno - Tomada de Contas Especial
       </legend>
-
-      <TextField
-        variant="outlined"
-        fullWidth
-        id="tomadaContasEspecialIdNumRegistro"
-        label="Identificação do Número do Registro"
-        name="tomadaContasEspecialIdNumRegistro"
-        value={formik.values.tomadaContasEspecialIdNumRegistro}
-        onChange={formik.handleChange}
-        error={
-          formik.touched.tomadaContasEspecialIdNumRegistro &&
-          Boolean(formik.errors.tomadaContasEspecialIdNumRegistro)
-        }
-        helperText={
-          formik.touched.tomadaContasEspecialIdNumRegistro &&
-          formik.errors.tomadaContasEspecialIdNumRegistro
-        }
-        disabled
-      />
-
-{context.formInfo.nomeUnidadeGestora !== 'SECONT' ? <TextField
-        variant="outlined"
-        fullWidth
-        id="tomadaContasEspecialCodigoUnidadeGestora"
-        label="Código da Unidade Gestora em que as
-        Tomadas de Contas Especiais foram
-        realizadas"
-        name="tomadaContasEspecialCodigoUnidadeGestora"
-        value={formik.values.tomadaContasEspecialCodigoUnidadeGestora}
-        onChange={formik.handleChange}
-        error={
-          formik.touched.tomadaContasEspecialCodigoUnidadeGestora &&
-          Boolean(formik.errors.tomadaContasEspecialCodigoUnidadeGestora)
-        }
-        helperText={
-          formik.touched.tomadaContasEspecialCodigoUnidadeGestora &&
-          formik.errors.tomadaContasEspecialCodigoUnidadeGestora
-        }
-        disabled
-      /> : <Autocomplete
+      <Box sx={{display: 'flex', gap: '1rem'}}>       
+        <TextField
+          variant="outlined"
+          fullWidth
+          id="tomadaContasEspecialIdNumRegistro"
+          label="Identificação do Número do Registro"
+          name="tomadaContasEspecialIdNumRegistro"
+          value={formik.values.tomadaContasEspecialIdNumRegistro}
+          onChange={formik.handleChange}
+          error={
+            formik.touched.tomadaContasEspecialIdNumRegistro &&
+            Boolean(formik.errors.tomadaContasEspecialIdNumRegistro)
+          }
+          helperText={
+            formik.touched.tomadaContasEspecialIdNumRegistro &&
+            formik.errors.tomadaContasEspecialIdNumRegistro
+          }
+          disabled
+        />
+        
+      </Box>
+      {context.formInfo.nomeUnidadeGestora !== 'SECONT' ? 
+      <Box sx={{display: 'flex', gap: '1rem'}}>
+        <TextField
+          variant="outlined"
+          fullWidth
+          id="tomadaContasEspecialCodigoUnidadeGestora"
+          label="Código da Unidade Gestora em que as
+          Tomadas de Contas Especiais foram
+          realizadas"
+          name="tomadaContasEspecialCodigoUnidadeGestora"
+          value={formik.values.tomadaContasEspecialCodigoUnidadeGestora}
+          onChange={formik.handleChange}
+          error={
+            formik.touched.tomadaContasEspecialCodigoUnidadeGestora &&
+            Boolean(formik.errors.tomadaContasEspecialCodigoUnidadeGestora)
+          }
+          helperText={
+            formik.touched.tomadaContasEspecialCodigoUnidadeGestora &&
+            formik.errors.tomadaContasEspecialCodigoUnidadeGestora
+          }
+          disabled
+        />
+        
+      </Box> : <Autocomplete
       id="tomadaContasEspecialCodigoUnidadeGestora"
       options={codigosCidades}
       noOptionsText={'Não encontrado'}
@@ -455,249 +497,305 @@ export const TomadaContasEspecial = () => {
         
       }}
      
+      
       renderInput={(params) => (
-        <TextField
-          {...params}
-          name="tomadaContasEspecialCodigoUnidadeGestora"
-          label="Código da Unidade Gestora em que as
-          Tomadas de Contas Especiais foram
-          realizadas"
-          variant="outlined"
-          error={
-            formik.touched.tomadaContasEspecialCodigoUnidadeGestora &&
-            Boolean(formik.errors.tomadaContasEspecialCodigoUnidadeGestora)
-          }
-          helperText={
-            formik.touched.tomadaContasEspecialCodigoUnidadeGestora &&
-            formik.errors.tomadaContasEspecialCodigoUnidadeGestora
-          }
-          fullWidth
-        />
+        <Box sx={{display: 'flex', gap: '1rem'}}>
+          <TextField
+            {...params}
+            name="tomadaContasEspecialCodigoUnidadeGestora"
+            label="Código da Unidade Gestora em que as
+            Tomadas de Contas Especiais foram
+            realizadas"
+            variant="outlined"
+            error={
+              formik.touched.tomadaContasEspecialCodigoUnidadeGestora &&
+              Boolean(formik.errors.tomadaContasEspecialCodigoUnidadeGestora)
+            }
+            helperText={
+              formik.touched.tomadaContasEspecialCodigoUnidadeGestora &&
+              formik.errors.tomadaContasEspecialCodigoUnidadeGestora
+            }
+            fullWidth
+          />
+          <Tooltip title="" placement='right'>
+            <IconButton sx={{height: 'max-content', alignSelf: 'center'}} onClick={() => {
+              setModalOpen(true);
+              setTextoModalCampo("Campo ID Número Registro");
+              setVideoModalCampo("https://www.youtube.com/embed/Ru6Ld6nH6C8?start=1&end=120")
+            }}>
+              <InfoOutlined />
+            </IconButton>
+          </Tooltip>
+        </Box>
       )}
     /> }
 
-      <TextField
-        variant="outlined"
-        fullWidth
-        id="tomadaContasEspecialProcesso"
-        label="Número do Processo Administrativo da
-      Tomada de Contas Especial"
-        name="tomadaContasEspecialProcesso"
-        value={formik.values.tomadaContasEspecialProcesso}
-        onChange={formik.handleChange}
-        error={
-          formik.touched.tomadaContasEspecialProcesso &&
-          Boolean(formik.errors.tomadaContasEspecialProcesso)
-        }
-        helperText={
-          formik.touched.tomadaContasEspecialProcesso &&
-          formik.errors.tomadaContasEspecialProcesso
-        }
-      />
-
-      <TextField
-        variant="outlined"
-        fullWidth
-        id="tomadaContasEspecialAnoProcesso"
-        label="Ano do Processo Administrativo da Tomada de
-      Contas Especial"
-        name="tomadaContasEspecialAnoProcesso"
-        value={formik.values.tomadaContasEspecialAnoProcesso}
-        onChange={formik.handleChange}
-        error={
-          formik.touched.tomadaContasEspecialAnoProcesso &&
-          Boolean(formik.errors.tomadaContasEspecialAnoProcesso)
-        }
-        helperText={
-          formik.touched.tomadaContasEspecialAnoProcesso &&
-          formik.errors.tomadaContasEspecialAnoProcesso
-        }
-      />
-
+    <Box sx={{display: 'flex', gap: '1rem'}}>
       <TextField
         fullWidth
         select
         inputProps={{ MenuProps: { disableScrollLock: true } }}
-        id="tomadaContasEspecialFatoMotivo"
-        name="tomadaContasEspecialFatoMotivo"
-        value={formik.values.tomadaContasEspecialFatoMotivo}
-        label="Fatos motivadores para a Instauração da
-      Tomada de Contas Especial"
+        id="tomadaContasEspecialTipoTce"
+        name="tomadaContasEspecialTipoTce"
+        value={formik.values.tomadaContasEspecialTipoTce}
+        label="Tipo de Tomada de Contas Especial"
         onChange={formik.handleChange}
         error={
-          formik.touched.tomadaContasEspecialFatoMotivo &&
-          Boolean(formik.errors.tomadaContasEspecialFatoMotivo)
+          formik.touched.tomadaContasEspecialTipoTce &&
+          Boolean(formik.errors.tomadaContasEspecialTipoTce)
         }
         helperText={
-          formik.touched.tomadaContasEspecialFatoMotivo &&
-          formik.errors.tomadaContasEspecialFatoMotivo
+          formik.touched.tomadaContasEspecialTipoTce &&
+          formik.errors.tomadaContasEspecialTipoTce
         }
       >
         <MenuItem value={1}>
-          1 - Omissão no dever de prestar contas ou a não comprovação da correta
-          aplicação de recursos repassados mediante convênio, contrato de
-          repasse, ou instrumento congênere;
+          1 – Instaurada de ofício
         </MenuItem>
         <MenuItem value={2}>
-          2 - Ocorrência de desfalque, alcance, desvio, desaparecimento de
-          dinheiro, bens ou valores públicos;
-        </MenuItem>
-        <MenuItem value={3}>
-          3 - Ocorrência de extravio, perda, subtração ou deterioração culposa
-          ou dolosa de valores e bens;
-        </MenuItem>
-        <MenuItem value={4}>
-          4 - Prática de ato ilegal, ilegítimo ou antieconômico de que resulte
-          dano ao erário;
-        </MenuItem>
-        <MenuItem value={5}>
-          5 - Concessão irregular de quaisquer benefícios fiscais ou de renúncia
-          de receitas de que resulte dano ao erário.
+          2 – Determinada pelo TCEES
         </MenuItem>
       </TextField>
+      
+      </Box>
+      <Box sx={{display: 'flex', gap: '1rem'}}>
+        <TextField
+          variant="outlined"
+          fullWidth
+          id="tomadaContasEspecialProcesso"
+          label="Número do Processo Administrativo da
+        Tomada de Contas Especial"
+          name="tomadaContasEspecialProcesso"
+          value={formik.values.tomadaContasEspecialProcesso}
+          onChange={formik.handleChange}
+          error={
+            formik.touched.tomadaContasEspecialProcesso &&
+            Boolean(formik.errors.tomadaContasEspecialProcesso)
+          }
+          helperText={
+            formik.touched.tomadaContasEspecialProcesso &&
+            formik.errors.tomadaContasEspecialProcesso
+          }
+        />
+        
+      </Box>
+      <Box sx={{display: 'flex', gap: '1rem'}}>
+        <TextField
+          variant="outlined"
+          fullWidth
+          id="tomadaContasEspecialAnoProcesso"
+          label="Ano do Processo Administrativo da Tomada de
+        Contas Especial"
+          name="tomadaContasEspecialAnoProcesso"
+          value={formik.values.tomadaContasEspecialAnoProcesso}
+          onChange={formik.handleChange}
+          error={
+            formik.touched.tomadaContasEspecialAnoProcesso &&
+            Boolean(formik.errors.tomadaContasEspecialAnoProcesso)
+          }
+          helperText={
+            formik.touched.tomadaContasEspecialAnoProcesso &&
+            formik.errors.tomadaContasEspecialAnoProcesso
+          }
+        />
+        
+      </Box>
+      <Box sx={{display: 'flex', gap: '1rem'}}>
+        <TextField
+          fullWidth
+          select
+          inputProps={{ MenuProps: { disableScrollLock: true } }}
+          id="tomadaContasEspecialFatoMotivo"
+          name="tomadaContasEspecialFatoMotivo"
+          value={formik.values.tomadaContasEspecialFatoMotivo}
+          label="Fatos motivadores para a Instauração da
+        Tomada de Contas Especial"
+          onChange={formik.handleChange}
+          error={
+            formik.touched.tomadaContasEspecialFatoMotivo &&
+            Boolean(formik.errors.tomadaContasEspecialFatoMotivo)
+          }
+          helperText={
+            formik.touched.tomadaContasEspecialFatoMotivo &&
+            formik.errors.tomadaContasEspecialFatoMotivo
+          }
+        >
+          <MenuItem value={1}>
+            1 - Omissão no dever de prestar contas ou a não comprovação da correta
+            aplicação de recursos repassados mediante convênio, contrato de
+            repasse, ou instrumento congênere;
+          </MenuItem>
+          <MenuItem value={2}>
+            2 - Ocorrência de desfalque, alcance, desvio, desaparecimento de
+            dinheiro, bens ou valores públicos;
+          </MenuItem>
+          <MenuItem value={3}>
+            3 - Ocorrência de extravio, perda, subtração ou deterioração culposa
+            ou dolosa de valores e bens;
+          </MenuItem>
+          <MenuItem value={4}>
+            4 - Prática de ato ilegal, ilegítimo ou antieconômico de que resulte
+            dano ao erário;
+          </MenuItem>
+          <MenuItem value={5}>
+            5 - Concessão irregular de quaisquer benefícios fiscais ou de renúncia
+            de receitas de que resulte dano ao erário.
+          </MenuItem>
+        </TextField>
+        
+      </Box>
 
-      <TextField
-        variant="outlined"
-        fullWidth
-        id="tomadaContasEspecialDataCiencia"
-        label="Data do evento ou, quando desconhecida, da
-      data da ciência do fato pela autoridade
-      competente (Inciso I, do art. 2o da IN 32/2014)."
-        name="tomadaContasEspecialDataCiencia"
-        value={formik.values.tomadaContasEspecialDataCiencia}
-        onChange={formik.handleChange}
-        error={
-          formik.touched.tomadaContasEspecialDataCiencia &&
-          Boolean(formik.errors.tomadaContasEspecialDataCiencia)
-        }
-        helperText={
-          formik.touched.tomadaContasEspecialDataCiencia &&
-          formik.errors.tomadaContasEspecialDataCiencia
-        }
-      />
+      <Box sx={{display: 'flex', gap: '1rem'}}>
+        <TextField
+          variant="outlined"
+          fullWidth
+          id="tomadaContasEspecialDataCiencia"
+          label="Data do evento ou, quando desconhecida, 
+            data da ciência do fato pela autoridade
+            competente (Inciso I, do art. 2o da IN 32/2014)."
+          name="tomadaContasEspecialDataCiencia"
+          value={formik.values.tomadaContasEspecialDataCiencia}
+          onChange={formik.handleChange}
+          error={
+            formik.touched.tomadaContasEspecialDataCiencia &&
+            Boolean(formik.errors.tomadaContasEspecialDataCiencia)
+          }
+          helperText={
+            formik.touched.tomadaContasEspecialDataCiencia &&
+            formik.errors.tomadaContasEspecialDataCiencia
+          }
+        />
+        
+      </Box>
 
-      <TextField
-        variant="outlined"
-        fullWidth
-        id="tomadaContasEspecialDataInstauracao"
-        label="Data de Instauração da Tomada de Contas
-      Especial"
-        name="tomadaContasEspecialDataInstauracao"
-        value={formik.values.tomadaContasEspecialDataInstauracao}
-        onChange={formik.handleChange}
-        error={
-          formik.touched.tomadaContasEspecialDataInstauracao &&
-          Boolean(formik.errors.tomadaContasEspecialDataInstauracao)
-        }
-        helperText={
-          formik.touched.tomadaContasEspecialDataInstauracao &&
-          formik.errors.tomadaContasEspecialDataInstauracao
-        }
-      />
+      <Box sx={{display: 'flex', gap: '1rem'}}>
+        <TextField
+          variant="outlined"
+          fullWidth
+          id="tomadaContasEspecialDataInstauracao"
+          label="Data de Instauração da Tomada de Contas
+        Especial"
+          name="tomadaContasEspecialDataInstauracao"
+          value={formik.values.tomadaContasEspecialDataInstauracao}
+          onChange={formik.handleChange}
+          error={
+            formik.touched.tomadaContasEspecialDataInstauracao &&
+            Boolean(formik.errors.tomadaContasEspecialDataInstauracao)
+          }
+          helperText={
+            formik.touched.tomadaContasEspecialDataInstauracao &&
+            formik.errors.tomadaContasEspecialDataInstauracao
+          }
+        />
+        
+      </Box>
 
-      <TextField
-        variant="outlined"
-        fullWidth
-        id="tomadaContasEspecialDataEnvioTribunalContas"
-        label="Data de Envio ao TCEES da Tomada de
-      Contas Especial"
-        name="tomadaContasEspecialDataEnvioTribunalContas"
-        value={formik.values.tomadaContasEspecialDataEnvioTribunalContas}
-        onChange={formik.handleChange}
-        error={
-          formik.touched.tomadaContasEspecialDataEnvioTribunalContas &&
-          Boolean(formik.errors.tomadaContasEspecialDataEnvioTribunalContas)
-        }
-        helperText={
-          formik.touched.tomadaContasEspecialDataEnvioTribunalContas &&
-          formik.errors.tomadaContasEspecialDataEnvioTribunalContas
-        }
-      />
+      <Box sx={{display: 'flex', gap: '1rem'}}>
+        <TextField
+          variant="outlined"
+          fullWidth
+          id="tomadaContasEspecialDataEnvioTribunalContas"
+          label="Data de Envio ao TCEES da Tomada de
+        Contas Especial"
+          name="tomadaContasEspecialDataEnvioTribunalContas"
+          value={formik.values.tomadaContasEspecialDataEnvioTribunalContas}
+          onChange={(e) => {formik.handleChange(e); validaEnvio()}}
+          error={
+            formik.touched.tomadaContasEspecialDataEnvioTribunalContas &&
+            Boolean(formik.errors.tomadaContasEspecialDataEnvioTribunalContas)
+          }
+          helperText={
+            formik.touched.tomadaContasEspecialDataEnvioTribunalContas &&
+            formik.errors.tomadaContasEspecialDataEnvioTribunalContas
+          }
+        />
+        
+      </Box>
 
-      <TextField
-        variant="outlined"
-        fullWidth
-        id="tomadaContasEspecialValorDebito"
-        label="Valor Original do Débito"
-        name="tomadaContasEspecialValorDebito"
-        value={formik.values.tomadaContasEspecialValorDebito}
-        onChange={formik.handleChange}
-        error={
-          formik.touched.tomadaContasEspecialValorDebito &&
-          Boolean(formik.errors.tomadaContasEspecialValorDebito)
-        }
-        helperText={
-          formik.touched.tomadaContasEspecialValorDebito &&
-          formik.errors.tomadaContasEspecialValorDebito
-        }
-      />
+      <Box sx={{display: 'flex', gap: '1rem'}}>
+        <TextField
+          variant="outlined"
+          fullWidth
+          id="tomadaContasEspecialValorDebito"
+          label="Valor Original do Débito - R$"
+          name="tomadaContasEspecialValorDebito"
+          value={formik.values.tomadaContasEspecialValorDebito}
+          onChange={formik.handleChange}
+          error={
+            formik.touched.tomadaContasEspecialValorDebito &&
+            Boolean(formik.errors.tomadaContasEspecialValorDebito)
+          }
+          helperText={
+            formik.touched.tomadaContasEspecialValorDebito &&
+            formik.errors.tomadaContasEspecialValorDebito
+          }
+        />
+          
+      </Box>
 
-      <TextField
-        fullWidth
-        select
-        inputProps={{ MenuProps: { disableScrollLock: true } }}
-        id="tomadaContasEspecialSituacaoEm31do12"
-        name="tomadaContasEspecialSituacaoEm31do12"
-        value={formik.values.tomadaContasEspecialSituacaoEm31do12}
-        label="Situação da Tomada de Contas Especial em
-      31 de dezembro do Exercício referência da
-      Prestação de Contas Anual"
-        onChange={formik.handleChange}
-        error={
-          formik.touched.tomadaContasEspecialSituacaoEm31do12 &&
-          Boolean(formik.errors.tomadaContasEspecialSituacaoEm31do12)
-        }
-        helperText={
-          formik.touched.tomadaContasEspecialSituacaoEm31do12 &&
-          formik.errors.tomadaContasEspecialSituacaoEm31do12
-        }
-      >
-        <MenuItem value={1}>1 - Em instrução dentro do prazo;</MenuItem>
-        <MenuItem value={2}>2 - Em instrução fora do prazo;</MenuItem>
-        <MenuItem value={3}>
-          3 - Em complementação de informações determinada pelo Tribunal de
-          Contas;
-        </MenuItem>
-        <MenuItem value={4}>4 - Finalizada;</MenuItem>
-      </TextField>
+      <Box sx={{display: formik.values.tomadaContasEspecialDataEnvioTribunalContas === "" ?'flex':'none' , gap: '1rem'}}>
+        <TextField
+          fullWidth
+          select
+          inputProps={{ MenuProps: { disableScrollLock: true } }}
+          id="tomadaContasEspecialSituacaoEm31do12InstauradaUg"
+          name="tomadaContasEspecialSituacaoEm31do12InstauradaUg"
+          value={formik.values.tomadaContasEspecialSituacaoEm31do12InstauradaUg}
+          label="Situação da Tomada de Contas Especial em 
+            31 de dezembro do Exercício referência da 
+            Prestação de Contas Anual, referente as 
+            TCE’s instauradas na UG e ainda não 
+            encaminhadas ao TCEES.
+            "
+          onChange={formik.handleChange}
+          error={
+            formik.touched.tomadaContasEspecialSituacaoEm31do12InstauradaUg &&
+            Boolean(formik.errors.tomadaContasEspecialSituacaoEm31do12InstauradaUg)
+          }
+          helperText={
+            formik.touched.tomadaContasEspecialSituacaoEm31do12InstauradaUg &&
+            formik.errors.tomadaContasEspecialSituacaoEm31do12InstauradaUg
+          }
+        >
+          <MenuItem value={1}>1 - Aguardando o início da instrução</MenuItem>
+          <MenuItem value={2}>2 - Em instrução dentro do prazo</MenuItem>
+          <MenuItem value={3}>3 - Em instrução fora do prazo</MenuItem>
+          <MenuItem value={4}>4 - Finalizada – Dispensado o encaminhamento ao TCEES – art. 9º, IN 32/2014;</MenuItem>
+          <MenuItem value={5}>5 - Finalizada - Arquivada antes do encaminhamento ao TCEES – art. 10, IN 32/2014</MenuItem>
+        </TextField>
+        
+      </Box>
 
-      <TextField
-        fullWidth
-        select
-        inputProps={{ MenuProps: { disableScrollLock: true } }}
-        id="tomadaContasEspecialMotivoBaixaDebito"
-        name="tomadaContasEspecialMotivoBaixaDebito"
-        value={formik.values.tomadaContasEspecialMotivoBaixaDebito}
-        label="Motivo da Baixa da Responsabilidade pelo
-      Débito"
-        onChange={formik.handleChange}
-        error={
-          formik.touched.tomadaContasEspecialMotivoBaixaDebito &&
-          Boolean(formik.errors.tomadaContasEspecialMotivoBaixaDebito)
-        }
-        helperText={
-          formik.touched.tomadaContasEspecialMotivoBaixaDebito &&
-          formik.errors.tomadaContasEspecialMotivoBaixaDebito
-        }
-      >
-        <MenuItem value={1}>
-          1 - Elisão da responsabilidade pelo dano inicialmente imputada ao
-          responsável;
-        </MenuItem>
-        <MenuItem value={2}>2 - Ausência de comprovação do dano;</MenuItem>
-        <MenuItem value={3}>
-          3 - Arquivamento do processo por falta de pressupostos de instauração
-          ou do seu desenvolvimento regular;
-        </MenuItem>
-        <MenuItem value={4}>
-          4 - Contas consideradas iliquidáveis, nos termos do art. 90 da Lei
-          Complementar Estadual n° 621/2012;
-        </MenuItem>
-        <MenuItem value={5}>
-          5 - Quitação ao responsável pelo recolhimento do débito.
-        </MenuItem>
-      </TextField>
-
+      <Box sx={{display: formik.values.tomadaContasEspecialDataEnvioTribunalContas !== "" ?'flex':'none', gap: '1rem'}}>
+        <TextField
+          fullWidth
+          select
+          inputProps={{ MenuProps: { disableScrollLock: true } }}
+          id="tomadaContasEspecialSituacaoEm31do12EnviadaTcees"
+          name="tomadaContasEspecialSituacaoEm31do12EnviadaTcees"
+          value={formik.values.tomadaContasEspecialSituacaoEm31do12EnviadaTcees}
+          label="Situação da Tomada de Contas Especial em 
+            31 de dezembro do Exercício referência da 
+            Prestação de Contas Anual, referente as 
+            TCE’s já encaminhadas ao TCEES.
+            "
+          onChange={formik.handleChange}
+          error={
+            formik.touched.tomadaContasEspecialSituacaoEm31do12EnviadaTcees &&
+            Boolean(formik.errors.tomadaContasEspecialSituacaoEm31do12EnviadaTcees)
+          }
+          helperText={
+            formik.touched.tomadaContasEspecialSituacaoEm31do12EnviadaTcees &&
+            formik.errors.tomadaContasEspecialSituacaoEm31do12EnviadaTcees
+          }
+        >
+          <MenuItem value={1}>1 - Finalizada - Aguardando deliberação do TCEES</MenuItem>
+          <MenuItem value={2}>2 - Com decisão do TCEES pela condenação ao ressarcimento / Sem baixa da responsabilidade pelo débito</MenuItem>
+          <MenuItem value={3}>3 - Com decisão do TCEES pela baixa da responsabilidade pelo débito – art. 20, da IN 32/2014</MenuItem>
+          <MenuItem value={4}>4 - Em complementação de informações, após retorno determinado pelo TCEES – art. 15, IN 32/2014</MenuItem>
+        </TextField>
+        
+      </Box>
       <div data-button="next-previous">
         <IconButton
           title="Anterior"
@@ -714,7 +812,7 @@ export const TomadaContasEspecial = () => {
           aria-label="Próximo formulário."
           type="submit"
           id="next"
-          onClick={getIdButton}
+          onClick={() => getIdButton}
         >
           <ArrowCircleRightIcon />
         </IconButton>
@@ -744,11 +842,25 @@ export const TomadaContasEspecial = () => {
         responseNo={responseDialogUnidadeGestoraNo}
       />
 
-<AlertSucess
+      <AlertSucess
         open={openAlertSave}
         setOpen={setOpenAlertSave}
         message={'Os dados da Tomada de Contas Especial foram salvos.'}
       />
+
+      <Collapse in={modalOpen} unmountOnExit>
+        <Button onClick={() => setModalOpen(true)}>Open modal</Button>
+        <Modal
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={modalStyle}>
+            <ModalExplicacaoCampo texto={textoModalCampo} video={videoModalCampo}/>
+          </Box>
+        </Modal>
+      </Collapse>
     </TomadaContasEspecialraStyle>
   )
 }

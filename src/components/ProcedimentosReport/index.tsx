@@ -11,6 +11,8 @@ interface DataProcedimentoProps {
   procedimentosTipoPontoControle: string
   procedimentosUniversoAnalisado: string
   procedimentosAmostraSelecionada: string
+  procedimentosUnidadeAmostraSelecionada: string
+  procedimentosDescricaoAmostraSelecionada: string
   procedimentosDescricaoAnalise: string
   procedimentosTipoProcedimentoAnalisado: string
   procedimentosSituacaoAnalise: string
@@ -110,6 +112,32 @@ export const ProcedimentosReport = ({ dataProcedimentos }: PropsType) => {
               value={data.procedimentosAmostraSelecionada}
               disabled
             />
+
+            <TextField
+              variant="standard"
+              fullWidth
+              select
+              inputProps={{ MenuProps: { disableScrollLock: true } }}
+              id="procedimentosUnidadeAmostraSelecionada"
+              name="procedimentosUnidadeAmostraSelecionada"
+              value={data.procedimentosUnidadeAmostraSelecionada}
+              label="Unidade da Amostra Selecionada"
+              disabled
+            >
+              <MenuItem value={1}>1 – Unidades Físicas </MenuItem>
+              <MenuItem value={2}>2 – Valores Monetários</MenuItem>
+            </TextField>
+
+            <TextField
+              variant="standard"
+              fullWidth
+              id="procedimentosDescricaoAmostraSelecionada"
+              label="Descrição da Amostra"
+              name="procedimentosDescricaoAmostraSelecionada"
+              value={data.procedimentosDescricaoAmostraSelecionada}
+              disabled
+            />
+
             <TextField
               variant="standard"
               fullWidth
@@ -131,12 +159,7 @@ export const ProcedimentosReport = ({ dataProcedimentos }: PropsType) => {
               label="Tipo de Procedimento Aplicado"
               disabled
             >
-              <MenuItem value={1}>1 – Auditoria de conformidade </MenuItem>
-              <MenuItem value={2}>2 – Auditoria financeira</MenuItem>
-              <MenuItem value={3}>3 – Auditoria operacional</MenuItem>
               <MenuItem value={4}>4 – Analise documental</MenuItem>
-              <MenuItem value={5}>5 – Conciliações de demonstrativos</MenuItem>
-              <MenuItem value={6}>6 – Circularização</MenuItem>
               <MenuItem value={7}>7 – Revisão Analítica</MenuItem>
               <MenuItem value={8}>8 – Testes Substantivos</MenuItem>
               <MenuItem value={9}>9 – Testes de Controle</MenuItem>
@@ -147,6 +170,8 @@ export const ProcedimentosReport = ({ dataProcedimentos }: PropsType) => {
               <MenuItem value={14}>14 – Recálculo</MenuItem>
               <MenuItem value={15}>15 – Reexecução</MenuItem>
               <MenuItem value={16}>16 – Outros</MenuItem>
+              <MenuItem value={17}>17 – Conciliação</MenuItem>
+              <MenuItem value={18}>18 – Exame de registros auxiliares</MenuItem>
             </TextField>
 
             <TextField

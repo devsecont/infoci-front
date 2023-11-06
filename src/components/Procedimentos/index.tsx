@@ -1,6 +1,6 @@
 import { useFormik } from 'formik'
 
-import { TextField, MenuItem, Button, IconButton, Autocomplete } from '@mui/material'
+import { TextField, MenuItem, Button, IconButton, Autocomplete, Collapse, Modal, Box, Tooltip } from '@mui/material'
 import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight'
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft'
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle'
@@ -16,6 +16,8 @@ import baseAPI from '../../utils/baseAPI'
 import { AlertSucess } from '../AlertSucess'
 import pontosControle from '../../utils/pontosControle'
 import codigosCidades from '../../utils/codigosCidades'
+import ModalExplicacaoCampo from '../ModalExplicacaoCampo'
+import { InfoOutlined } from '@mui/icons-material'
 
 interface DataProcedimentoProps {
   id: number
@@ -26,12 +28,32 @@ interface DataProcedimentoProps {
   procedimentosTipoPontoControle: string
   procedimentosUniversoAnalisado: string
   procedimentosAmostraSelecionada: string
+  procedimentosUnidadeAmostraSelecionada: string
+  procedimentosDescricaoAmostraSelecionada: string
   procedimentosDescricaoAnalise: string
   procedimentosTipoProcedimentoAnalisado: string
   procedimentosSituacaoAnalise: string
 }
+const modalStyle = {
+  position: 'absolute' as 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: "50vw",
+  height: "max-content",
+  bgcolor: 'background.paper',
+  borderRadius: "5px",
+  border: "1px solid black",
+  boxShadow: 24,
+  p: "2rem",
+};
 
 export const Procedimentos = () => {
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [textoModalCampo, setTextoModalCampo] = useState("");
+  const [videoModalCampo, setVideoModalCampo] = useState("");
+
   const context = useContext(GlobalContext)
   const navigate = useNavigate()
   const token = localStorage.getItem('app-token')
@@ -78,10 +100,11 @@ export const Procedimentos = () => {
     const dataGetProcedimento = await getProcedimentos()
 
     if (dataGetProcedimento.length > 0) {
+      
       const dataGetProcedimentosReorderId: DataProcedimentoProps[] = await reorderIdNumRegistro(
         dataGetProcedimento,
       )
-
+      
       setDataProcedimentos([...dataGetProcedimentosReorderId])
 
       setSelectProcedimento(dataGetProcedimento.length - 1)
@@ -110,6 +133,8 @@ export const Procedimentos = () => {
           procedimentosTipoPontoControle: data.procedimentosTipoPontoControle,
           procedimentosUniversoAnalisado: data.procedimentosUniversoAnalisado,
           procedimentosAmostraSelecionada: data.procedimentosAmostraSelecionada,
+          procedimentosUnidadeAmostraSelecionada: data.procedimentosUnidadeAmostraSelecionada,
+          procedimentosDescricaoAmostraSelecionada: data.procedimentosDescricaoAmostraSelecionada,
           procedimentosDescricaoAnalise: data.procedimentosDescricaoAnalise,
           procedimentosTipoProcedimentoAnalisado:
             data.procedimentosTipoProcedimentoAnalisado,
@@ -126,12 +151,15 @@ export const Procedimentos = () => {
   ) {
     const dataGetProcedimentosReorderId = dataGetProcedimentos.map(
       async (data: DataProcedimentoProps, index: number) => {
+        /*
         const response = await axios.put(
           `${baseAPI.URL}/forms/${context.formInfo.id}/procedimentos/${data.id}`,
           { procedimentosIdNumRegistro: `${('0000' + (index + 1)).slice(-5)}` },
           { headers: baseAPI.HEADERS(token) },
         )
-        return response.data
+        */
+          data.procedimentosIdNumRegistro = `${('0000' + (index + 1)).slice(-5)}`
+        return data
       },
     )
 
@@ -147,6 +175,8 @@ export const Procedimentos = () => {
       procedimentosTipoPontoControle: ``,
       procedimentosUniversoAnalisado: ``,
       procedimentosAmostraSelecionada: ``,
+      procedimentosUnidadeAmostraSelecionada: ``,
+      procedimentosDescricaoAmostraSelecionada: ``,
       procedimentosDescricaoAnalise: ``,
       procedimentosTipoProcedimentoAnalisado: ``,
       procedimentosSituacaoAnalise: ``,
@@ -253,9 +283,9 @@ export const Procedimentos = () => {
         context.formInfo.nomeUnidadeGestora !== 'SECONT' ? 2 : ''
       }`,
       unidadeGestoraCodigoUnidadeGestora: ``,
-      unidadeGestoraResponsavelUnidadeGestora: ``,
-      unidadeGestoraExercicioUltimaManifestacaoControleInterno: ``,
       unidadeGestoraOpiniaoPrestacaoContasControleInterno: ``,
+      unidadeGestoraFatoRelevanteRelaci: ``,
+      unidadeGestoraAssuntoPrincipalFatoRelevanteRelaci: ``,
     }
     await axios.post(
       `${baseAPI.URL}/forms/${context.formInfo.id}/unidades`,
@@ -267,7 +297,6 @@ export const Procedimentos = () => {
   }
 
   function responseDialogUnidadeGestoraNo() {
-
     context.setValueTab(4)
     return
   }
@@ -303,6 +332,14 @@ export const Procedimentos = () => {
     procedimentosAmostraSelecionada: `${
       dataProcedimentos.length &&
       dataProcedimentos[selectProcedimento].procedimentosAmostraSelecionada
+    }`,
+    procedimentosUnidadeAmostraSelecionada: `${
+      dataProcedimentos.length &&
+      dataProcedimentos[selectProcedimento].procedimentosUnidadeAmostraSelecionada
+    }`,
+    procedimentosDescricaoAmostraSelecionada: `${
+      dataProcedimentos.length &&
+      dataProcedimentos[selectProcedimento].procedimentosDescricaoAmostraSelecionada
     }`,
     procedimentosDescricaoAnalise: `${
       dataProcedimentos.length &&
@@ -386,67 +423,75 @@ export const Procedimentos = () => {
       </div>
 
       <legend>Informações de Controle Interno - Procedimentos</legend>
-
-      <TextField
-        variant="outlined"
-        fullWidth
-        id="procedimentosIdNumRegistro"
-        label="Identificação do Número do Registro"
-        name="procedimentosIdNumRegistro"
-        value={formik.values.procedimentosIdNumRegistro}
-        onChange={formik.handleChange}
-        error={
-          formik.touched.procedimentosIdNumRegistro &&
-          Boolean(formik.errors.procedimentosIdNumRegistro)
-        }
-        helperText={
-          formik.touched.procedimentosIdNumRegistro &&
-          formik.errors.procedimentosIdNumRegistro
-        }
-        disabled
-      />
-
-      <TextField
-        fullWidth
-        select
-        inputProps={{ MenuProps: { disableScrollLock: true } }}
-        id="procedimentosNivelControleInterno"
-        name="procedimentosNivelControleInterno"
-        value={formik.values.procedimentosNivelControleInterno}
-        label="Nível de Controle Interno"
-        onChange={formik.handleChange}
-        error={
-          formik.touched.procedimentosNivelControleInterno &&
-          Boolean(formik.errors.procedimentosNivelControleInterno)
-        }
-        helperText={
-          formik.touched.procedimentosNivelControleInterno &&
-          formik.errors.procedimentosNivelControleInterno
-        }
-        disabled={context.formInfo.nomeUnidadeGestora !== "SECONT" ? true : false}
-      >
-        <MenuItem value={1}>1 – Unidade Central </MenuItem>
-        <MenuItem value={2}>2 – Unidade Setorial</MenuItem>
-      </TextField>
-
-      {context.formInfo.nomeUnidadeGestora !== 'SECONT' ? <TextField
-        variant="outlined"
-        fullWidth
-        id="procedimentosCodigoUnidadeGestora"
-        label="Código da Unidade Gestora em que os procedimentos foram aplicados"
-        name="procedimentosCodigoUnidadeGestora"
-        value={formik.values.procedimentosCodigoUnidadeGestora}
-        onChange={formik.handleChange}
-        error={
-          formik.touched.procedimentosCodigoUnidadeGestora &&
-          Boolean(formik.errors.procedimentosCodigoUnidadeGestora)
-        }
-        helperText={
-          formik.touched.procedimentosCodigoUnidadeGestora &&
-          formik.errors.procedimentosCodigoUnidadeGestora
-        }
-        disabled
-      /> : <Autocomplete
+      <Box sx={{display: 'flex', gap: '1rem'}}>
+        <TextField
+          variant="outlined"
+          fullWidth
+          id="procedimentosIdNumRegistro"
+          label="Identificação do Número do Registro"
+          name="procedimentosIdNumRegistro"
+          value={formik.values.procedimentosIdNumRegistro}
+          onChange={formik.handleChange}
+          error={
+            formik.touched.procedimentosIdNumRegistro &&
+            Boolean(formik.errors.procedimentosIdNumRegistro)
+          }
+          helperText={
+            formik.touched.procedimentosIdNumRegistro &&
+            formik.errors.procedimentosIdNumRegistro
+          }
+          disabled
+        />
+        
+      </Box>
+      
+      <Box sx={{display: 'flex', gap: '1rem'}}>
+        <TextField
+          fullWidth
+          select
+          inputProps={{ MenuProps: { disableScrollLock: true } }}
+          id="procedimentosNivelControleInterno"
+          name="procedimentosNivelControleInterno"
+          value={formik.values.procedimentosNivelControleInterno}
+          label="Nível de Controle Interno"
+          onChange={formik.handleChange}
+          error={
+            formik.touched.procedimentosNivelControleInterno &&
+            Boolean(formik.errors.procedimentosNivelControleInterno)
+          }
+          helperText={
+            formik.touched.procedimentosNivelControleInterno &&
+            formik.errors.procedimentosNivelControleInterno
+          }
+          disabled={context.formInfo.nomeUnidadeGestora !== "SECONT" ? true : false}
+        >
+          <MenuItem value={1}>1 – Unidade Central </MenuItem>
+          <MenuItem value={2}>2 – Unidade Setorial</MenuItem>
+        </TextField>
+        
+      </Box>
+      {context.formInfo.nomeUnidadeGestora !== 'SECONT' ? 
+        <Box sx={{display: 'flex', gap: '1rem'}}>
+          <TextField
+          variant="outlined"
+          fullWidth
+          id="procedimentosCodigoUnidadeGestora"
+          label="Código da Unidade Gestora em que os procedimentos foram aplicados"
+          name="procedimentosCodigoUnidadeGestora"
+          value={formik.values.procedimentosCodigoUnidadeGestora}
+          onChange={formik.handleChange}
+          error={
+            formik.touched.procedimentosCodigoUnidadeGestora &&
+            Boolean(formik.errors.procedimentosCodigoUnidadeGestora)
+          }
+          helperText={
+            formik.touched.procedimentosCodigoUnidadeGestora &&
+            formik.errors.procedimentosCodigoUnidadeGestora
+          }
+          disabled
+        /> 
+        
+      </Box>: <Autocomplete
       id="procedimentosCodigoUnidadeGestora"
       options={codigosCidades}
       noOptionsText={'Não encontrado'}
@@ -465,7 +510,8 @@ export const Procedimentos = () => {
       }}
      
       renderInput={(params) => (
-        <TextField
+        <Box sx={{display: 'flex', gap: '1rem'}}>
+          <TextField
           {...params}
           name="procedimentosCodigoUnidadeGestora"
           label="Código da Unidade Gestora em que os procedimentos foram aplicados"
@@ -480,6 +526,8 @@ export const Procedimentos = () => {
           }
           fullWidth
         />
+        
+      </Box>
       )}
     /> }
 
@@ -501,173 +549,235 @@ export const Procedimentos = () => {
         }}
        
         renderInput={(params) => (
-          <TextField
-            {...params}
-            name="procedimentosCodigoProcedimento"
-            label="Código do Procedimento (Tabela Referencial 1 / IN 68 de 2020)"
-            variant="outlined"
-            error={
-              formik.touched.procedimentosCodigoProcedimento &&
-              Boolean(formik.errors.procedimentosCodigoProcedimento)
-            }
-            helperText={
-              formik.touched.procedimentosCodigoProcedimento &&
-              formik.errors.procedimentosCodigoProcedimento
-            }
-            fullWidth
-          />
+          <Box sx={{display: 'flex', gap: '1rem'}}>
+            <TextField
+              {...params}
+              name="procedimentosCodigoProcedimento"
+              label="Código do Procedimento (Tabela Referencial 1 / IN 68 de 2020)"
+              variant="outlined"
+              error={
+                formik.touched.procedimentosCodigoProcedimento &&
+                Boolean(formik.errors.procedimentosCodigoProcedimento)
+              }
+              helperText={
+                formik.touched.procedimentosCodigoProcedimento &&
+                formik.errors.procedimentosCodigoProcedimento
+              }
+              fullWidth
+            />
+            
+          </Box>
         )}
       />}
+      
+      <Box sx={{display: 'flex', gap: '1rem'}}>
+        <TextField
+          fullWidth
+          select
+          inputProps={{ MenuProps: { disableScrollLock: true } }}
+          id="procedimentosTipoPontoControle"
+          name="procedimentosTipoPontoControle"
+          value={formik.values.procedimentosTipoPontoControle}
+          label="Tipo do Ponto de Controle"
+          onChange={formik.handleChange}
+          error={
+            formik.touched.procedimentosTipoPontoControle &&
+            Boolean(formik.errors.procedimentosTipoPontoControle)
+          }
+          helperText={
+            formik.touched.procedimentosTipoPontoControle &&
+            formik.errors.procedimentosTipoPontoControle
+          }
+        >
+          <MenuItem value={1}>
+            1 - Quantitativo (se mensurável quantitativamente)
+          </MenuItem>
+          <MenuItem value={2}>
+            2 - Qualitativo (se não mensurável quantitativamente)
+          </MenuItem>
+        </TextField>
+        
+      </Box>
 
-      <TextField
-        fullWidth
-        select
-        inputProps={{ MenuProps: { disableScrollLock: true } }}
-        id="procedimentosTipoPontoControle"
-        name="procedimentosTipoPontoControle"
-        value={formik.values.procedimentosTipoPontoControle}
-        label="Tipo do Ponto de Controle"
-        onChange={formik.handleChange}
-        error={
-          formik.touched.procedimentosTipoPontoControle &&
-          Boolean(formik.errors.procedimentosTipoPontoControle)
-        }
-        helperText={
-          formik.touched.procedimentosTipoPontoControle &&
-          formik.errors.procedimentosTipoPontoControle
-        }
-      >
-        <MenuItem value={1}>
-          1 - Quantitativo (se mensurável quantitativamente)
-        </MenuItem>
-        <MenuItem value={2}>
-          2 - Qualitativo (se não mensurável quantitativamente)
-        </MenuItem>
-      </TextField>
+      <Box sx={{display: 'flex', gap: '1rem'}}>
+        <TextField
+          variant="outlined"
+          fullWidth
+          id="procedimentosUniversoAnalisado"
+          label="Universo do Ponto de Controle Analisado"
+          name="procedimentosUniversoAnalisado"
+          value={formik.values.procedimentosUniversoAnalisado}
+          onChange={formik.handleChange}
+          error={
+            formik.touched.procedimentosUniversoAnalisado &&
+            Boolean(formik.errors.procedimentosUniversoAnalisado)
+          }
+          helperText={
+            formik.touched.procedimentosUniversoAnalisado &&
+            formik.errors.procedimentosUniversoAnalisado
+          }
+        />
+        
+      </Box>
+      <Box sx={{display: 'flex', gap: '1rem'}}>
+        <TextField
+          variant="outlined"
+          fullWidth
+          id="procedimentosAmostraSelecionada"
+          label="Amostra Selecionada do Ponto de Controle Analisado"
+          name="procedimentosAmostraSelecionada"
+          value={formik.values.procedimentosAmostraSelecionada}
+          onChange={formik.handleChange}
+          error={
+            formik.touched.procedimentosAmostraSelecionada &&
+            Boolean(formik.errors.procedimentosAmostraSelecionada)
+          }
+          helperText={
+            formik.touched.procedimentosAmostraSelecionada &&
+            formik.errors.procedimentosAmostraSelecionada
+          }
+        />
+        
+      </Box>
 
-      <TextField
-        variant="outlined"
-        fullWidth
-        id="procedimentosUniversoAnalisado"
-        label="Universo do Ponto de Controle Analisado"
-        name="procedimentosUniversoAnalisado"
-        value={formik.values.procedimentosUniversoAnalisado}
-        onChange={formik.handleChange}
-        error={
-          formik.touched.procedimentosUniversoAnalisado &&
-          Boolean(formik.errors.procedimentosUniversoAnalisado)
-        }
-        helperText={
-          formik.touched.procedimentosUniversoAnalisado &&
-          formik.errors.procedimentosUniversoAnalisado
-        }
-      />
+      <Box sx={{display: 'flex', gap: '1rem'}}>
+        <TextField
+          fullWidth
+          select
+          inputProps={{ MenuProps: { disableScrollLock: true } }}
+          id="procedimentosUnidadeAmostraSelecionada"
+          name="procedimentosUnidadeAmostraSelecionada"
+          value={formik.values.procedimentosUnidadeAmostraSelecionada}
+          label="Unidade da Amostra Selecionada"
+          onChange={formik.handleChange}
+          error={
+            formik.touched.procedimentosUnidadeAmostraSelecionada &&
+            Boolean(formik.errors.procedimentosUnidadeAmostraSelecionada)
+          }
+          helperText={
+            formik.touched.procedimentosUnidadeAmostraSelecionada &&
+            formik.errors.procedimentosUnidadeAmostraSelecionada
+          }
+        >
+          <MenuItem value={1}>1 – Unidades Físicas </MenuItem>
+          <MenuItem value={2}>2 – Valores Monetários</MenuItem>
+        </TextField>
+        
+      </Box>
 
-      <TextField
-        variant="outlined"
-        fullWidth
-        id="procedimentosAmostraSelecionada"
-        label="Amostra Selecionada do Ponto de Controle Analisado"
-        name="procedimentosAmostraSelecionada"
-        value={formik.values.procedimentosAmostraSelecionada}
-        onChange={formik.handleChange}
-        error={
-          formik.touched.procedimentosAmostraSelecionada &&
-          Boolean(formik.errors.procedimentosAmostraSelecionada)
-        }
-        helperText={
-          formik.touched.procedimentosAmostraSelecionada &&
-          formik.errors.procedimentosAmostraSelecionada
-        }
-      />
-      <TextField
-        variant="outlined"
-        fullWidth
-        id="procedimentosDescricaoAnalise"
-        label="Descrição da Análise (Máximo de 250 caracteres)"
-        name="procedimentosDescricaoAnalise"
-        value={formik.values.procedimentosDescricaoAnalise}
-        onChange={formik.handleChange}
-        error={
-          formik.touched.procedimentosDescricaoAnalise &&
-          Boolean(formik.errors.procedimentosDescricaoAnalise)
-        }
-        helperText={
-          formik.touched.procedimentosDescricaoAnalise &&
-          formik.errors.procedimentosDescricaoAnalise
-        }
-        inputProps={{
-          maxLength: 250
-        }}
-      />
-
-      <TextField
-        fullWidth
-        select
-        inputProps={{ MenuProps: { disableScrollLock: true } }}
-        id="procedimentosTipoProcedimentoAnalisado"
-        name="procedimentosTipoProcedimentoAnalisado"
-        value={formik.values.procedimentosTipoProcedimentoAnalisado}
-        label="Tipo de Procedimento Aplicado"
-        onChange={formik.handleChange}
-        error={
-          formik.touched.procedimentosTipoProcedimentoAnalisado &&
-          Boolean(formik.errors.procedimentosTipoProcedimentoAnalisado)
-        }
-        helperText={
-          formik.touched.procedimentosTipoProcedimentoAnalisado &&
-          formik.errors.procedimentosTipoProcedimentoAnalisado
-        }
-      >
-        <MenuItem value={1}>1 – Auditoria de conformidade </MenuItem>
-        <MenuItem value={2}>2 – Auditoria financeira</MenuItem>
-        <MenuItem value={3}>3 – Auditoria operacional</MenuItem>
-        <MenuItem value={4}>4 – Analise documental</MenuItem>
-        <MenuItem value={5}>5 – Conciliações de demonstrativos</MenuItem>
-        <MenuItem value={6}>6 – Circularização</MenuItem>
-        <MenuItem value={7}>7 – Revisão Analítica</MenuItem>
-        <MenuItem value={8}>8 – Testes Substantivos</MenuItem>
-        <MenuItem value={9}>9 – Testes de Controle</MenuItem>
-        <MenuItem value={10}>10 – Inspeção Física</MenuItem>
-        <MenuItem value={11}>11 – Observação Direta</MenuItem>
-        <MenuItem value={12}>12 – Indagação</MenuItem>
-        <MenuItem value={13}>13 – Confirmação Extrema</MenuItem>
-        <MenuItem value={14}>14 – Recálculo</MenuItem>
-        <MenuItem value={15}>15 – Reexecução</MenuItem>
-        <MenuItem value={16}>16 – Outros</MenuItem>
-      </TextField>
-
-      <TextField
-        fullWidth
-        select
-        inputProps={{ MenuProps: { disableScrollLock: true } }}
-        id="procedimentosSituacaoAnalise"
-        name="procedimentosSituacaoAnalise"
-        value={formik.values.procedimentosSituacaoAnalise}
-        label="Situação da Análise"
-        onChange={formik.handleChange}
-        error={
-          formik.touched.procedimentosSituacaoAnalise &&
-          Boolean(formik.errors.procedimentosSituacaoAnalise)
-        }
-        helperText={
-          formik.touched.procedimentosSituacaoAnalise &&
-          formik.errors.procedimentosSituacaoAnalise
-        }
-      >
-        <MenuItem value={1}>
-          1 - Procedimento aplicado sem detecção de distorções
-        </MenuItem>
-        <MenuItem value={2}>
-          2 - Procedimento aplicado sem detecção de distorções relevantes,
-          constatando oportunidades de melhorias do controle
-        </MenuItem>
-        <MenuItem value={3}>
-          3 - Procedimento aplicado com constatação de distorções que ensejam
-          risco grave e necessidade de correções.
-        </MenuItem>
-      </TextField>
-
+      <Box sx={{display: 'flex', gap: '1rem'}}>
+        <TextField
+          variant="outlined"
+          fullWidth
+          id="procedimentosDescricaoAmostraSelecionada"
+          label={`Descrição da Amostra (Máximo de 250 caracteres)`}
+          name="procedimentosDescricaoAmostraSelecionada"
+          value={formik.values.procedimentosDescricaoAmostraSelecionada}
+          onChange={formik.handleChange}
+          multiline
+          error={
+            formik.touched.procedimentosDescricaoAmostraSelecionada &&
+            Boolean(formik.errors.procedimentosDescricaoAmostraSelecionada)
+          }
+          helperText={
+            formik.touched.procedimentosDescricaoAmostraSelecionada &&
+            formik.errors.procedimentosDescricaoAmostraSelecionada
+          }
+          inputProps={{
+            maxLength: 250
+          }}
+        />
+        
+      </Box>
+      <Box sx={{display: 'flex', gap: '1rem'}}>
+        <TextField
+          variant="outlined"
+          fullWidth
+          id="procedimentosDescricaoAnalise"
+          label="Descrição da Análise (Máximo de 250 caracteres)"
+          name="procedimentosDescricaoAnalise"
+          value={formik.values.procedimentosDescricaoAnalise}
+          onChange={formik.handleChange}
+          error={
+            formik.touched.procedimentosDescricaoAnalise &&
+            Boolean(formik.errors.procedimentosDescricaoAnalise)
+          }
+          helperText={
+            formik.touched.procedimentosDescricaoAnalise &&
+            formik.errors.procedimentosDescricaoAnalise
+          }
+          inputProps={{
+            maxLength: 250
+          }}
+        />
+        
+      </Box>
+      <Box sx={{display: 'flex', gap: '1rem'}}>
+        <TextField
+          fullWidth
+          select
+          inputProps={{ MenuProps: { disableScrollLock: true } }}
+          id="procedimentosTipoProcedimentoAnalisado"
+          name="procedimentosTipoProcedimentoAnalisado"
+          value={formik.values.procedimentosTipoProcedimentoAnalisado}
+          label="Tipo de Procedimento Aplicado"
+          onChange={formik.handleChange}
+          error={
+            formik.touched.procedimentosTipoProcedimentoAnalisado &&
+            Boolean(formik.errors.procedimentosTipoProcedimentoAnalisado)
+          }
+          helperText={
+            formik.touched.procedimentosTipoProcedimentoAnalisado &&
+            formik.errors.procedimentosTipoProcedimentoAnalisado
+          }
+        >
+          <MenuItem value={4}>4 – Analise documental</MenuItem>
+          <MenuItem value={7}>7 – Revisão Analítica</MenuItem>
+          <MenuItem value={10}>10 – Inspeção Física</MenuItem>
+          <MenuItem value={11}>11 – Observação Direta</MenuItem>
+          <MenuItem value={12}>12 – Indagação</MenuItem>
+          <MenuItem value={13}>13 – Confirmação Extrema</MenuItem>
+          <MenuItem value={14}>14 – Recálculo</MenuItem>
+          <MenuItem value={15}>15 – Reexecução</MenuItem>
+          <MenuItem value={16}>16 – Outros</MenuItem>
+          <MenuItem value={17}>17 – Conciliação</MenuItem>
+          <MenuItem value={18}>18 – Exame de registros auxiliares</MenuItem>
+        </TextField>
+        
+      </Box>
+      <Box sx={{display: 'flex', gap: '1rem'}}>
+        <TextField
+          fullWidth
+          select
+          inputProps={{ MenuProps: { disableScrollLock: true } }}
+          id="procedimentosSituacaoAnalise"
+          name="procedimentosSituacaoAnalise"
+          value={formik.values.procedimentosSituacaoAnalise}
+          label="Situação da Análise"
+          onChange={formik.handleChange}
+          error={
+            formik.touched.procedimentosSituacaoAnalise &&
+            Boolean(formik.errors.procedimentosSituacaoAnalise)
+          }
+          helperText={
+            formik.touched.procedimentosSituacaoAnalise &&
+            formik.errors.procedimentosSituacaoAnalise
+          }
+        >
+          <MenuItem value={1}>
+            1 - Procedimento aplicado sem detecção de distorções
+          </MenuItem>
+          <MenuItem value={2}>
+            2 - Procedimento aplicado sem detecção de distorções relevantes,
+            constatando oportunidades de melhorias do controle
+          </MenuItem>
+          <MenuItem value={3}>
+            3 - Procedimento aplicado com constatação de distorções que ensejam
+            risco grave e necessidade de correções.
+          </MenuItem>
+        </TextField>
+        
+      </Box>
       <div data-button="next-previous">
         <IconButton
           title="Anterior"
@@ -722,11 +832,24 @@ export const Procedimentos = () => {
         responseNo={responseDialogUnidadeGestoraNo}
       />
 
-<AlertSucess
+      <AlertSucess
         open={openAlertSave}
         setOpen={setOpenAlertSave}
         message={'Os dados do Procedimento foram salvos.'}
       />
+      <Collapse in={modalOpen} unmountOnExit>
+        <Button onClick={() => setModalOpen(true)}>Open modal</Button>
+        <Modal
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={modalStyle}>
+            <ModalExplicacaoCampo texto={textoModalCampo} video={videoModalCampo}/>
+          </Box>
+        </Modal>
+      </Collapse>
     </ProcedimentosStyle>
   )
 }
