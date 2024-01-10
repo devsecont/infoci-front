@@ -22,6 +22,7 @@ import ModalExplicacaoCampo from '../ModalExplicacaoCampo'
 interface DataTomadaContasEspecialProps {
   id: number
   tomadaContasEspecialIdNumRegistro: string
+  tomadaContasEspecialExisteTceInstaurada: string,
   tomadaContasEspecialCodigoUnidadeGestora: string
   tomadaContasEspecialTipoTce: string
   tomadaContasEspecialProcesso: string
@@ -132,6 +133,8 @@ export const TomadaContasEspecial = () => {
           id: data.id,
           tomadaContasEspecialIdNumRegistro:
             data.tomadaContasEspecialIdNumRegistro,
+          tomadaContasEspecialExisteTceInstaurada: 
+          data.tomadaContasEspecialExisteTceInstaurada,
           tomadaContasEspecialCodigoUnidadeGestora:
             data.tomadaContasEspecialCodigoUnidadeGestora,
           tomadaContasEspecialTipoTce:
@@ -180,6 +183,7 @@ export const TomadaContasEspecial = () => {
   async function newTomadaContasEspecial() {
     const valuesTCE = {
       tomadaContasEspecialIdNumRegistro: ``,
+      tomadaContasEspecialExisteTceInstaurada: 1,
       tomadaContasEspecialCodigoUnidadeGestora: `${context.formInfo.nomeUnidadeGestora !== 'SECONT' ? context.formInfo.codigoUnidadeGestoraCidades : ''}`,
       tomadaContasEspecialTipoTce: ``,
       tomadaContasEspecialProcesso: ``,
@@ -300,6 +304,7 @@ export const TomadaContasEspecial = () => {
       dataTomadaContasEspecial[selectTomadaContasEspecial]
         .tomadaContasEspecialIdNumRegistro
     }`,
+    tomadaContasEspecialExisteTceInstaurada : 1,
     tomadaContasEspecialCodigoUnidadeGestora: `${
       dataTomadaContasEspecial.length ?
       dataTomadaContasEspecial[selectTomadaContasEspecial]

@@ -10,7 +10,11 @@ const validationSchema = yup.object({
     .required('O campo é obrigatório')
     .matches(/^[0-9]+$/, "Apenas números")
     .max(5, 'Máximo de 5 dígitos'),
-
+  tomadaContasEspecialExisteTceInstaurada: yup
+    .string()
+    .required('O campo é obrigatório')
+    .matches(/^[0-9]+$/, "Apenas números")
+    .max(1, 'Máximo de 1 dígitos'),
     tomadaContasEspecialCodigoUnidadeGestora: yup
     .string()
     .required('O campo é obrigatório')
@@ -23,7 +27,7 @@ const validationSchema = yup.object({
     tomadaContasEspecialProcesso: yup
     .string()
     .required('O campo é obrigatório')
-    .max(16, 'Máximo de 16 dígitos'),
+    .max(26, 'Máximo de 26 dígitos'),
 
     tomadaContasEspecialAnoProcesso: yup
     .string()
