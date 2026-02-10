@@ -21,7 +21,7 @@ const validationSchema = yup.object({
     procedimentosCodigoProcedimento: yup
     .string()
     .required('O campo é obrigatório')
-    .max(6, 'Máximo de 6 dígitos'),
+    .max(10, 'Máximo de 10 dígitos'),
 
     procedimentosTipoPontoControle: yup
     .number()

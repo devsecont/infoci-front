@@ -79,7 +79,7 @@ export const FormInfoci = () => {
         <p>Clique no botão <span>SALVAR</span> caso deseje salvar as informações e terminar o preenchimento em outro momento.</p></>}
         {context.valueTab === 2 && <p>Após clicar no botão <span>Próximo</span> será perguntado se deseja incluir outro Procedimento.</p>}
         {context.valueTab === 3 && <p>Após clicar no botão <span>Próximo</span> será perguntado se deseja incluir outra Tomada de Contas Especial.</p>}
-        <Button variant='text' href='https://secont.es.gov.br/faq-infoci' target="_blank">Instruções de como preencher o formulário.</Button>
+        <Button variant='text' href='https://controleinterno.es.gov.br/videos-reluci' target="_blank">Instruções de como preencher o formulário.</Button>
       </div>
       <Box sx={{ width: '100%' }}>
         <Box sx={{ borderBottom: 1 }} style={{ background: 'var(--blue-300)' }} data-tab="tab">

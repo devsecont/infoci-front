@@ -495,7 +495,7 @@ export const Procedimentos = () => {
       id="procedimentosCodigoUnidadeGestora"
       options={codigosCidades}
       noOptionsText={'Não encontrado'}
-      getOptionLabel={(option) => option.label || ""}
+     getOptionLabel={(option) => `${option.cod} - ${option.label}` || ""}
       value={codigosCidades.filter(codigo => codigo.cod === formik.values.procedimentosCodigoUnidadeGestora)[0]}
       isOptionEqualToValue={(option, value) => option === value}
       defaultValue={{cod:"", label:""}}
@@ -535,7 +535,7 @@ export const Procedimentos = () => {
         id="procedimentosCodigoProcedimento"
         options={pontosControle}
         noOptionsText={'Não encontrado'}
-        getOptionLabel={(option) => option.label || ""}
+        getOptionLabel={(option) => `${option.cod} - ${option.label}` || ""}
         value={pontosControle.filter(ponto => ponto.cod === formik.values.procedimentosCodigoProcedimento)[0]}
         isOptionEqualToValue={(option, value) => option === value}
         defaultValue={{cod:"", label:""}}
